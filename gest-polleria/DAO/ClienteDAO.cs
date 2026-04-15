@@ -169,7 +169,7 @@ namespace gest_polleria.DAO
             using (SqlConnection cn = new SqlConnection(cadena))
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("dbo.usp_Clientes_Eliminar", cn))
+                using (SqlCommand cmd = new SqlCommand("dbo.usp_Clientes_Eliminar", cn)) //Falta crear el procedimiento almacenado para eliminar físicamente un cliente
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@IdCliente", SqlDbType.Int).Value = idCliente;
