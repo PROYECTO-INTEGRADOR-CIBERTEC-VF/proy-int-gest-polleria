@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using gest_polleria.DAO;
-using WebApiPolleria.Models;
+using gest_polleria.Models;
 
-namespace WebApiPolleria.Controllers
+namespace gest_polleria.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

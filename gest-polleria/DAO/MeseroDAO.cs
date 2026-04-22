@@ -2,7 +2,7 @@
 using System.Data;
 using gest_polleria.Models;
 
-namespace WebApiPolleria.DAO
+namespace gest_polleria.DAO
 {
     public class MeseroDAO
     {
