@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
+using WebApiPolleria.Models;
 
 namespace gest_polleria.Controllers.Operaciones
 {
