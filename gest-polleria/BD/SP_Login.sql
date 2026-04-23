@@ -14,14 +14,22 @@ GO
 CREATE TABLE [dbo].[Usuarios](
     [IdUsuario] [int] IDENTITY(1,1) NOT NULL,
     [UserName] [nvarchar](50) NOT NULL,
-    [ClaveHash] [nvarchar](256) NOT NULL,
-    [NombreCompleto] [nvarchar](150) NOT NULL,
+    [ClaveHash] [nvarchar](200) NOT NULL,
+    [NombreCompleto] [nvarchar](100) NOT NULL,
     [Email] [nvarchar](100) NULL,
     [Telefono] [nvarchar](20) NULL,
-    [IdRol] [int] NOT NULL,
     [Activo] [bit] NOT NULL DEFAULT(1),
     [FechaRegistro] [datetime2](7) NOT NULL DEFAULT(SYSDATETIME()),
-PRIMARY KEY CLUSTERED ([IdUsuario] ASC),
+PRIMARY KEY CLUSTERED ([IdUsuario] ASC)
+)
+GO
+
+-- Tabla UsuariosRoles
+CREATE TABLE [dbo].[UsuariosRoles](
+    [IdUsuario] [int] NOT NULL,
+    [IdRol] [int] NOT NULL,
+PRIMARY KEY CLUSTERED ([IdUsuario] ASC, [IdRol] ASC),
+FOREIGN KEY ([IdUsuario]) REFERENCES [dbo].[Usuarios]([IdUsuario]),
 FOREIGN KEY ([IdRol]) REFERENCES [dbo].[Roles]([IdRol])
 )
 GO
@@ -30,16 +38,20 @@ GO
 INSERT INTO Roles (Nombre) VALUES ('Administrador'), ('Mesero')
 GO
 
-INSERT INTO Usuarios (UserName, ClaveHash, NombreCompleto, IdRol)
+INSERT INTO Usuarios (UserName, ClaveHash, NombreCompleto)
 VALUES 
-('admin', 'admin123', 'Administrador Principal', 1),
-('mesero1', 'mesero123', 'Juan Perez', 2)
+('admin', 'admin123', 'Administrador Principal'),
+('mesero1', 'mesero123', 'Juan Perez')
+GO
+
+INSERT INTO UsuariosRoles (IdUsuario, IdRol)
+VALUES (1, 1), (2, 2)
 GO
 
 -- Stored Procedure Login
 CREATE PROC [dbo].[usp_Usuarios_Login]
     @UserName NVARCHAR(50),
-    @ClaveHash NVARCHAR(256),
+    @ClaveHash NVARCHAR(200),
     @Ok BIT OUTPUT,
     @Mensaje NVARCHAR(200) OUTPUT
 AS
@@ -52,7 +64,8 @@ BEGIN
         u.NombreCompleto,
         r.Nombre AS Rol
     FROM dbo.Usuarios u
-    INNER JOIN dbo.Roles r ON u.IdRol = r.IdRol
+    INNER JOIN dbo.UsuariosRoles ur ON u.IdUsuario = ur.IdUsuario
+    INNER JOIN dbo.Roles r ON ur.IdRol = r.IdRol
     WHERE u.UserName = @UserName
       AND u.ClaveHash = @ClaveHash
       AND u.Activo = 1;

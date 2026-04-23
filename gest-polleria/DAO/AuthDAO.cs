@@ -20,7 +20,7 @@ namespace gest_polleria.DAO
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.Add("@UserName", SqlDbType.NVarChar, 50).Value = request.UserName;
-                    cmd.Parameters.Add("@ClaveHash", SqlDbType.NVarChar, 256).Value = request.ClaveHash;
+                    cmd.Parameters.Add("@ClaveHash", SqlDbType.NVarChar, 200).Value = request.ClaveHash;
 
                     var pOk = cmd.Parameters.Add("@Ok", SqlDbType.Bit);
                     pOk.Direction = ParameterDirection.Output;
