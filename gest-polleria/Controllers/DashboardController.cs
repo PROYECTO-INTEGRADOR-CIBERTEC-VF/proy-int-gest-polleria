@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace appPolleria.Controllers
+namespace gest_polleria.Controllers
 {
     public class DashboardController : Controller
     {
