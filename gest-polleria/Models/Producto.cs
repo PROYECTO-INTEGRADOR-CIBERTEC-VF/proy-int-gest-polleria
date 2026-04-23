@@ -1,5 +1,5 @@
 ﻿namespace gest_polleria.Models
-
+{ 
      public class Producto
     {
         public int IdProducto { get; set; }
