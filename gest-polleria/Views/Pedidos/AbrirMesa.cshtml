@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Abrir Mesa";
+    ViewBag.Titulo = "Gestión de Pedidos";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #ffffff;
+        border-right: none;
+        color: var(--primary-red);
+    }
+
+    .form-control, .form-select {
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 3rem; display: flex; justify-content: center; align-items: flex-start;">
+
+            <div class="card shadow-lg" style="width: 100%; max-width: 500px; border: none; border-radius: 15px;">
+
+                <div class="card-header text-white text-center" style="background-color: var(--primary-red); border-radius: 15px 15px 0 0; padding: 2rem; border: none;">
+                    <i class="fa-solid fa-bell-concierge fa-3x mb-3"></i>
+                    <h3 class="mb-0" style="font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Abrir Nueva Mesa</h3>
+                    <div style="width: 40px; height: 3px; background: white; margin: 0.5rem auto; border-radius: 2px; opacity: 0.7;"></div>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger d-flex align-items-center" role="alert" style="border-radius: 10px;">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            <div>@ViewBag.Error</div>
+                        </div>
+                    }
+
+                    <form asp-action="AbrirMesa" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color: var(--dark-blue);">Número de Mesa</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-table"></i></span>
+                                <input type="number" name="idMesa" class="form-control" placeholder="Ej: 5" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color: var(--dark-blue);">Tipo de Pedido</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-utensils"></i></span>
+                                <select name="idTipoPedido" class="form-select">
+                                    <option value="1">Consumo en Mesa</option>
+                                    <option value="2">Para llevar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" style="color: var(--dark-blue);">Mesero Asignado <small class="text-muted fw-normal">(opcional)</small></label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+                                <input type="number" name="idMesero" class="form-control" placeholder="Código de mesero" />
+                            </div>
+                        </div>
+
+                        <hr class="my-4" style="opacity: 0.1;">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-lg shadow" style="background-color: var(--primary-red); color: white; border: none; border-radius: 12px; font-weight: 700; padding: 0.8rem;">
+                                <i class="fa-solid fa-play me-2"></i> INICIAR ATENCIÓN
+                            </button>
+                            <a asp-action="Pedido" class="btn btn-link text-decoration-none fw-bold" style="color: var(--dark-blue);">
+                                <i class="fa-solid fa-xmark me-1"></i> CANCELAR
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

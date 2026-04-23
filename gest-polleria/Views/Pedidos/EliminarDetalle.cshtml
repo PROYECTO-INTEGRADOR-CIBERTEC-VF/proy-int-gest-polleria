@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Eliminar Detalle";
+    ViewBag.Titulo = "Gestión de Pedidos";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #ffffff;
+        border-right: none;
+        color: var(--primary-red);
+    }
+
+    .form-control {
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 3rem; display: flex; justify-content: center; align-items: flex-start;">
+
+            <div class="card shadow-lg" style="width: 100%; max-width: 500px; border: none; border-radius: 15px;">
+
+                <div class="card-header text-white text-center" style="background-color: var(--primary-red); border-radius: 15px 15px 0 0; padding: 2rem; border: none;">
+                    <i class="fa-solid fa-trash-can fa-3x mb-3"></i>
+                    <h3 class="mb-0" style="font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Eliminar Detalle</h3>
+                    <small style="opacity: 0.9;">Esta acción no se puede deshacer</small>
+                    <div style="width: 40px; height: 3px; background: white; margin: 0.5rem auto; border-radius: 2px; opacity: 0.7;"></div>
+                </div>
+
+                <div class="card-body p-4 text-center">
+                    <p class="text-muted mb-4">Ingrese el identificador del detalle que desea retirar del pedido.</p>
+
+                    <form asp-action="EliminarDetalle" method="post">
+
+                        <div class="mb-4">
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                <input type="number" class="form-control" name="id" placeholder="ID del Detalle (Ej: 102)" required />
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" style="background-color: rgba(231, 76, 60, 0.05); color: #c0392b; border-radius: 10px;">
+                            <i class="fa-solid fa-circle-exclamation me-3 fa-lg"></i>
+                            <div class="text-start small fw-bold">Se eliminará permanentemente el producto y su cantidad del pedido seleccionado.</div>
+                        </div>
+
+                        <hr class="my-4" style="opacity: 0.1;">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-lg shadow"
+                                    style="background-color: var(--primary-red); color: white; border: none; border-radius: 12px; font-weight: 700; padding: 0.8rem;"
+                                    onclick="return confirm('¿Está completamente seguro de que desea eliminar este detalle?');">
+                                <i class="fa-solid fa-trash me-2"></i> CONFIRMAR ELIMINACIÓN
+                            </button>
+                            <a asp-action="Pedido" class="btn btn-link text-decoration-none fw-bold" style="color: var(--dark-blue);">
+                                <i class="fa-solid fa-xmark me-1"></i> CANCELAR
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,163 @@
+﻿@model IEnumerable<appPolleria.Models.Mesa>
+
+@{
+    ViewData["Title"] = "Mesa";
+    bool soloActivas = ViewBag.SoloActivas ?? true;
+    string buscar = ViewBag.Buscar ?? "";
+    ViewBag.Titulo = "Dashboard - Mesas";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+    }
+
+    .btn-system-red {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+    }
+
+        .btn-system-red:hover {
+            background-color: #c0392b;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    .table-thead-custom {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--primary-red);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+    }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: #f4f7f6;">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 2rem;">
+
+            <div class="mb-4 text-center">
+                <div style="background-color: var(--primary-red); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-table fa-2x" style="color: white;"></i>
+                </div>
+                <h2 style="font-weight: 800; color: var(--dark-blue); text-transform: uppercase; letter-spacing: 1px;">Gestión de Mesas</h2>
+                <div style="width: 50px; height: 4px; background: var(--primary-red); margin: 0.5rem auto; border-radius: 2px;"></div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+                <a asp-action="Registrar" class="btn btn-system-red shadow-sm" style="border-radius: 8px; padding: 0.6rem 1.2rem;">
+                    <i class="fa-solid fa-plus me-2"></i> Nueva Mesa
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-4">
+
+                    <form asp-action="Mesa" method="get" class="row g-3 mb-4 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold" style="color: var(--dark-blue);">Buscar Mesa</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass" style="color: var(--primary-red);"></i></span>
+                                <input type="text" name="buscar" value="@buscar" class="form-control border-start-0" placeholder="Número o descripción..." />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-check form-switch mb-2">
+                                <input type="hidden" name="soloActivas" value="false" />
+                                <input class="form-check-input" type="checkbox" name="soloActivas" value="true" id="switchActivas" @(soloActivas ? "checked" : "")>
+                                <label class="form-check-label fw-bold" for="switchActivas" style="color: var(--dark-blue);">Solo activas</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-dark w-100 shadow-sm" style="border-radius: 8px; background-color: var(--dark-blue);">
+                                <i class="fa-solid fa-filter me-2"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-thead-custom">
+                                <tr>
+                                    <th class="py-3 px-3">ID</th>
+                                    <th class="py-3">N° Mesa</th>
+                                    <th class="py-3">Descripción</th>
+                                    <th class="py-3">Capacidad</th>
+                                    <th class="py-3 text-center">Estado</th>
+                                    <th class="py-3 text-center" style="width: 180px;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="px-3 fw-bold text-secondary">#@item.IdMesa</td>
+                                        <td>
+                                            <span class="badge" style="background-color: rgba(231, 76, 60, 0.1); color: var(--primary-red); border: 1px solid var(--primary-red); padding: 0.5rem 1rem;">
+                                                Mesa @item.NumeroMesa
+                                            </span>
+                                        </td>
+                                        <td class="text-muted">@item.Descripcion</td>
+                                        <td>
+                                            <i class="fa-solid fa-users me-2 text-muted"></i> @item.Capacidad personas
+                                        </td>
+                                        <td class="text-center">
+                                            @if (item.Activa)
+                                            {
+                                                <span class="badge rounded-pill" style="background-color: rgba(39, 174, 96, 0.1); color: #27ae60; border: 1px solid #27ae60; padding: 0.5rem 1rem;">Activo</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge rounded-pill bg-light text-muted border px-3 py-2">Inactivo</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group shadow-sm" role="group">
+                                                <a asp-action="Actualizar" asp-route-id="@item.IdMesa" class="btn btn-outline-dark btn-sm" title="Editar" style="border-color: #dee2e6;">
+                                                    <i class="fa-solid fa-pen-to-square" style="color: var(--dark-blue);"></i>
+                                                </a>
+
+                                                @if (item.Activa)
+                                                {
+                                                    <a asp-action="Desactivar" asp-route-id="@item.IdMesa" class="btn btn-outline-danger btn-sm" title="Desactivar" style="border-color: #dee2e6;" onclick="return confirm('¿Desactivar mesa?')">
+                                                        <i class="fa-solid fa-ban" style="color: var(--primary-red);"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="Activar" asp-route-id="@item.IdMesa" class="btn btn-outline-success btn-sm" title="Activar" style="border-color: #dee2e6;">
+                                                        <i class="fa-solid fa-check" style="color: #27ae60;"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        const msg = document.getElementById("msg");
+        if (msg) msg.remove();
+    }, 5000);
+</script>

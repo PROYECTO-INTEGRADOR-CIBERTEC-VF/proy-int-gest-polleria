@@ -1,0 +1,31 @@
+﻿@model appPolleria.Models.Rol
+
+@{
+    ViewData["Title"] = "Definir Rol";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 border-top border-danger border-4">
+                <div class="card-body p-4">
+                    <h4 class="text-center mb-4 text-danger fw-bold">Nuevo Rol de Sistema</h4>
+                    <form asp-action="RegistrarRol" method="post">
+                        <div class="form-floating mb-3">
+                            <input asp-for="NombreRol" class="form-control" placeholder="Nombre" />
+                            <label asp-for="NombreRol">Nombre del Rol (Ej: CAJERO)</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input asp-for="Descripcion" class="form-control" placeholder="Descripción" />
+                            <label asp-for="Descripcion">Descripción de acceso</label>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-lg w-100 mb-2 shadow-sm">
+                            <i class="fas fa-save me-2"></i> Crear Rol
+                        </button>
+                        <a asp-action="ListadoRoles" class="btn btn-outline-secondary w-100">Regresar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

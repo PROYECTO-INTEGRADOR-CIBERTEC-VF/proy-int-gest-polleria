@@ -1,0 +1,42 @@
+﻿@model appPolleria.Models.ProductoInsumo
+
+@{
+    ViewData["Title"] = "Agregar Insumo a Receta";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-mortar-pestle me-2"></i> Nuevo Ingrediente</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="RegistrarInsumoReceta" method="post">
+                        <input type="hidden" asp-for="IdProducto" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Seleccionar Insumo</label>
+                            <input asp-for="IdInsumo" class="form-control" placeholder="ID del Insumo" required />
+                            <small class="text-muted">Ingrese el ID del insumo (ej: 1 para Pollo Entero).</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Cantidad" class="form-label fw-bold text-danger">Cantidad por Porción</label>
+                            <div class="input-group">
+                                <input asp-for="Cantidad" class="form-control" type="number" step="0.001" required />
+                                <span class="input-group-text bg-light text-muted">Cant.</span>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger fw-bold">Vincular a Receta</button>
+                            <a asp-action="ListadoRecetaProducto" asp-route-idProducto="@Model.IdProducto" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

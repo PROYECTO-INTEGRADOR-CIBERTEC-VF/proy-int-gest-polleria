@@ -1,0 +1,150 @@
+﻿@model appPolleria.Models.Cliente
+
+@{
+    ViewData["Title"] = "Detalle del Cliente";
+    ViewBag.Titulo = "Gestión de Clientes";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .detail-card {
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .info-label {
+        color: #7f8c8d;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        color: var(--dark-blue);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .btn-system-red {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-system-red:hover {
+            background-color: #c0392b;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+        }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 3rem;">
+
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-7">
+
+                    <div class="mb-3">
+                        <a asp-action="ListadoClientes" class="text-decoration-none text-muted fw-bold small">
+                            <i class="fas fa-chevron-left me-1"></i> VOLVER AL DIRECTORIO
+                        </a>
+                    </div>
+
+                    <div class="card detail-card shadow-lg">
+
+                        <div class="card-header text-white p-4" style="background-color: var(--dark-blue); border-bottom: 4px solid var(--primary-red);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="mb-1 fw-bold">Información del Cliente</h3>
+                                    <span class="badge @(Model.EsEmpresa ? "bg-info" : "bg-warning") text-dark">
+                                        <i class="fas @(Model.EsEmpresa ? "fa-building" : "fa-user") me-1"></i>
+                                        @(Model.EsEmpresa ? "CLIENTE JURÍDICO" : "PERSONA NATURAL")
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small opacity-75">ID DE REGISTRO</div>
+                                    <div class="fs-4 fw-bold text-white">#@Model.IdCliente</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4 bg-white">
+
+                            <div class="row mb-4 bg-light p-3 rounded-3 mx-0">
+                                <div class="col-sm-4 info-label">Documento Oficial</div>
+                                <div class="col-sm-8 info-value">
+                                    <span class="text-danger">@Model.TipoDocumento</span> — @Model.NumeroDocumento
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-sm-4 info-label">
+                                    @(Model.EsEmpresa ? "Razón Social" : "Nombre Completo")
+                                </div>
+                                <div class="col-sm-8 info-value text-uppercase">
+                                    @(Model.EsEmpresa? Model.RazonSocial: $"{Model.Nombres} {Model.Apellidos}")
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-sm-4 info-label">Dirección Fiscal/Entrega</div>
+                                <div class="col-sm-8 info-value">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i> @Model.Direccion
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-sm-6">
+                                    <div class="info-label mb-1">Teléfono Movil</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-phone-alt text-success me-2"></i> @Model.Telefono
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-label mb-1">Correo Electrónico</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-envelope text-primary me-2"></i>
+                                        <a href="mailto:@Model.Email" class="text-decoration-none" style="color: inherit;">@Model.Email</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white p-4 border-0 d-flex justify-content-between align-items-center">
+                            <p class="small text-muted mb-0">
+                                <i class="fas fa-clock me-1"></i> Información actualizada del sistema
+                            </p>
+                            <div class="d-flex gap-2">
+                                <a asp-action="ListadoClientes" class="btn btn-light fw-bold border" style="border-radius: 8px;">
+                                    CANCELAR
+                                </a>
+                                <a asp-action="EdicionCliente" asp-route-id="@Model.IdCliente" class="btn btn-system-red px-4">
+                                    <i class="fas fa-edit me-2"></i>EDITAR DATOS
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

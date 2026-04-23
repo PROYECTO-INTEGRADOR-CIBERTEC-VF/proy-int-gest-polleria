@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Cerrar Mesa";
+}
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: #f4f7f6;">
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; display: flex; justify-content: center; align-items: flex-start; padding-top: 5rem;">
+            <div class="card shadow-lg border-0" style="width: 100%; max-width: 500px; border-radius: 15px;">
+                <div class="card-header text-white text-center" style="background-color: #2f3e50; border-radius: 15px 15px 0 0; padding: 2rem;">
+                    <i class="fa-solid fa-file-invoice-dollar fa-3x mb-3" style="color: #e74c3c;"></i>
+                    <h3 class="fw-bold mb-0">CERRAR MESA</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CerrarMesa" method="get">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">ID DEL PEDIDO A CERRAR</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-calculator" style="color: #e74c3c;"></i></span>
+                                <input type="number" name="id" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-lg shadow text-white" style="background-color: #e74c3c; border-radius: 10px; font-weight: 700;">
+                                FINALIZAR CUENTA
+                            </button>
+                            <a asp-action="Pedido" class="btn btn-link text-decoration-none fw-bold" style="color: #2f3e50;">VOLVER</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

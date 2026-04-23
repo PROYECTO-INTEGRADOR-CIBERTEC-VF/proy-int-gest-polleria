@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Compra";
+    ViewBag.Titulo = "Dashboard - Compras";
+}
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: #f4f7f6;">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 2.5rem;">
+
+            <div class="mb-4 text-center">
+                <div style="background-color: #e74c3c; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-cart-plus fa-2x" style="color: white;"></i>
+                </div>
+                <h2 style="font-weight: 800; color: #2f3e50; text-transform: uppercase; letter-spacing: 1px;">Gestión de Compras</h2>
+                <div style="width: 50px; height: 4px; background: #e74c3c; margin: 0.5rem auto; border-radius: 2px;"></div>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+
+                <div class="col-xl-5 col-lg-6">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                        <div class="card-header bg-white border-0 pt-4 px-4">
+                            <h5 class="mb-0" style="font-weight: 700; color: #34495e;">
+                                <i class="fa-solid fa-file-invoice me-2 text-primary"></i> Datos de la Compra
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            @await Html.PartialAsync("_Registrar")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6 col-lg-6">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #ffffff;">
+                        <div class="card-header bg-white border-0 pt-4 px-4">
+                            <h5 class="mb-0" style="font-weight: 700; color: #34495e;">
+                                <i class="fa-solid fa-boxes-stacked me-2 text-success"></i> Detalle de Productos
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            @await Html.PartialAsync("_Agregar")
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="msg-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+                @* El script manejará el borrado de mensajes aquí *@
+            </div>
+
+            <script>
+                setTimeout(() => {
+                    const msg = document.getElementById("msg");
+                    if (msg) {
+                        msg.style.transition = "opacity 0.5s ease";
+                        msg.style.opacity = "0";
+                        setTimeout(() => msg.remove(), 500);
+                    }
+                }, 5000);
+            </script>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efecto hover suave para los paneles */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        }
+
+    /* Personalización de scrollbar interna */
+    .main-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+</style>

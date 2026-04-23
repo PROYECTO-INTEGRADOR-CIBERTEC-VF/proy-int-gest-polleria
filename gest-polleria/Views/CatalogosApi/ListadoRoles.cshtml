@@ -1,0 +1,95 @@
+﻿@model IEnumerable<appPolleria.Models.Rol>
+
+@{
+    ViewData["Title"] = "Roles de Usuario";
+    ViewBag.Titulo = "Seguridad del Sistema";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .btn-system-red {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-system-red:hover {
+            background-color: #c0392b;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+        }
+
+    .table-thead-custom {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--primary-red);
+    }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 2rem;">
+
+            <div class="mb-4 text-center">
+                <div style="background-color: var(--primary-red); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-user-shield fa-2x" style="color: white;"></i>
+                </div>
+                <h2 style="font-weight: 800; color: var(--dark-blue); text-transform: uppercase; letter-spacing: 1px;">Gestión de Roles</h2>
+                <div style="width: 50px; height: 4px; background: var(--primary-red); margin: 0.5rem auto; border-radius: 2px;"></div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+                <a asp-action="RegistrarRol" class="btn btn-system-red shadow-sm" style="padding: 0.6rem 1.2rem;">
+                    <i class="fa-solid fa-lock-open me-2"></i> Nuevo Rol
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-thead-custom">
+                                <tr>
+                                    <th class="py-3 px-4">Nombre del Rol</th>
+                                    <th class="py-3">Descripción de Permisos</th>
+                                    <th class="py-3 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="px-4 fw-bold text-uppercase text-danger">@item.NombreRol</td>
+                                            <td class="text-muted italic">@item.Descripcion</td>
+                                            <td class="text-center">
+                                                <a href="#" class="btn btn-sm btn-outline-dark border-0" title="Editar" style="background-color: rgba(52, 152, 219, 0.1);">
+                                                    <i class="fa-solid fa-pen-to-square text-primary"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

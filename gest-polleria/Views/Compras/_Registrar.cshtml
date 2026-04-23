@@ -1,0 +1,74 @@
+﻿@model appPolleria.Models.Compra
+<style>
+    .btn-rojo {
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-rojo:hover {
+            background-color: #c0392b; /* un rojo más oscuro al pasar el mouse */
+            color: #fff;
+        }
+</style>
+<div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Registro de Compra</h5>
+    </div>
+
+    <div class="card-body">
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-info">
+                @ViewBag.Mensaje
+            </div>
+        }
+
+        <form asp-action="Registrar" method="post">
+            <input asp-for="IdCompra" type="hidden" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="IdProveedor" class="form-label">Proveedor</label>
+                    <input asp-for="IdProveedor" class="form-control" />
+                    <span asp-validation-for="IdProveedor" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="TipoComprobante" class="form-label">Tipo Comprobante</label>
+                    <select asp-for="TipoComprobante" class="form-select">
+                        <option value="">-- Seleccione --</option>
+                        <option value="FACTURA">Factura</option>
+                        <option value="BOLETA">Boleta</option>
+                    </select>
+                    <span asp-validation-for="TipoComprobante" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Serie" class="form-label">Serie</label>
+                    <input asp-for="Serie" class="form-control" />
+                    <span asp-validation-for="Serie" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Numero" class="form-label">Número</label>
+                    <input asp-for="Numero" class="form-control" />
+                    <span asp-validation-for="Numero" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ImporteTotal" class="form-label">Importe Total</label>
+                    <input asp-for="ImporteTotal" class="form-control" readonly />
+                </div>
+            </div>
+
+            <!-- Botón Registrar Compra -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-rojo">
+                    <i class="bi bi-save"></i> Registrar Compra
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

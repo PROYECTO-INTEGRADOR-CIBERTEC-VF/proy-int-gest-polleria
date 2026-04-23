@@ -1,0 +1,186 @@
+﻿@model IEnumerable<appPolleria.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+    ViewBag.Titulo = "Directorio Comercial";
+}
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .btn-system-red {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-system-red:hover {
+            background-color: #c0392b;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+        }
+
+    .table-thead-custom {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--primary-red);
+    }
+
+    .filter-card {
+        background-color: white;
+        border-radius: 12px;
+        border: 1px solid #eee;
+    }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 2rem;">
+
+            <div class="mb-4 text-center">
+                <div style="background-color: var(--primary-red); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-address-book fa-2x" style="color: white;"></i>
+                </div>
+                <h2 style="font-weight: 800; color: var(--dark-blue); text-transform: uppercase; letter-spacing: 1px;">Gestión de Clientes</h2>
+                <div style="width: 50px; height: 4px; background: var(--primary-red); margin: 0.5rem auto; border-radius: 2px;"></div>
+            </div>
+
+            <div class="filter-card shadow-sm p-3 mb-4">
+                <form asp-action="ListadoClientes" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold small text-muted">BÚSQUEDA GENERAL</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="buscar" class="form-control border-start-0" placeholder="DNI, RUC o Nombre..." value="@Context.Request.Query["buscar"]">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-muted">TIPO DE CLIENTE</label>
+                        <select name="esEmpresa" class="form-select">
+                            <option value="">Todos los registros</option>
+                            <option value="false">Personas Naturales</option>
+                            <option value="true">Empresas (Jurídicas)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">
+                            <i class="fa-solid fa-filter me-2"></i>Filtrar
+                        </button>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <a asp-action="RegistrarCliente" class="btn btn-system-red w-100">
+                            <i class="fas fa-user-plus me-2"></i>Nuevo
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-thead-custom">
+                                <tr>
+                                    <th class="py-3 px-4">Documento</th>
+                                    <th class="py-3">Cliente / Razón Social</th>
+                                    <th class="py-3">Contacto</th>
+                                    <th class="py-3 text-center">Tipo</th>
+                                    <th class="py-3 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="px-4">
+                                                <span class="badge bg-light text-dark border">@item.TipoDocumento</span>
+                                                <div class="small fw-bold mt-1">@item.NumeroDocumento</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold" style="color: var(--dark-blue);">
+                                                    @(item.EsEmpresa? item.RazonSocial: $"{item.Nombres} {item.Apellidos}")
+                                                </div>
+                                                <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> @item.Direccion</small>
+                                            </td>
+                                            <td>
+                                                <div class="small"><i class="fas fa-phone-alt me-1 text-danger"></i> @item.Telefono</div>
+                                                <div class="small text-muted text-truncate" style="max-width: 180px;">@item.Email</div>
+                                            </td>
+                                            <td class="text-center">
+                                                @if (item.EsEmpresa)
+                                                {
+                                                    <span class="badge rounded-pill" style="background-color: rgba(52, 152, 219, 0.1); color: #3498db; border: 1px solid #3498db;">Corporativo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge rounded-pill" style="background-color: rgba(155, 89, 182, 0.1); color: #9b59b6; border: 1px solid #9b59b6;">Personal</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                                    <a asp-action="DetalleCliente" asp-route-id="@item.IdCliente"
+                                                       class="btn btn-sm btn-outline-dark border-0"
+                                                       title="Ver Ficha Completa"
+                                                       style="background-color: rgba(52, 152, 219, 0.1);">
+                                                        <i class="fa-solid fa-magnifying-glass text-primary"></i>
+                                                    </a>
+
+                                                    <a asp-action="EdicionCliente" asp-route-id="@item.IdCliente"
+                                                       class="btn btn-sm btn-outline-dark border-0"
+                                                       title="Editar Datos"
+                                                       style="background-color: rgba(243, 156, 18, 0.1);">
+                                                        <i class="fa-solid fa-pen-to-square text-warning"></i>
+                                                    </a>
+
+                                                    <button class="btn btn-sm btn-outline-dark border-0"
+                                                            onclick="confirmarDesactivar(@item.IdCliente)"
+                                                            title="Desactivar Cliente"
+                                                            style="background-color: rgba(231, 76, 60, 0.1);">
+                                                        <i class="fa-solid fa-user-minus text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <i class="fas fa-users-slash fa-3x text-muted mb-3 opacity-25"></i>
+                                            <p class="text-muted">No se encontraron clientes para mostrar.</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarDesactivar(id) {
+        if (confirm("¿Está seguro que desea desactivar este cliente?")) {
+            console.log("Desactivando cliente: " + id);
+            // Implementar llamada a controlador aquí
+        }
+    }
+</script>

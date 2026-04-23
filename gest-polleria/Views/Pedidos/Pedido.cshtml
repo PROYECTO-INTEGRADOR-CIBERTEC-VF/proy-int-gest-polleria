@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Pedido";
+    ViewBag.Titulo = "Gestión de Pedidos";
+}
+@model appPolleria.Models.Pedidos
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    .btn-system-red {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+        .btn-system-red:hover {
+            background-color: #c0392b;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.25);
+        }
+
+    .btn-outline-custom {
+        border: 2px solid var(--dark-blue);
+        color: var(--dark-blue);
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+        .btn-outline-custom:hover {
+            background-color: var(--dark-blue);
+            color: white;
+        }
+</style>
+
+<div class="layout" style="display: flex; height: 100vh; width: 100%; background-color: var(--bg-light);">
+
+    @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+    <div class="content" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+
+        @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+        <div class="main-content" style="flex: 1; overflow-y: auto; padding: 2rem;">
+
+            <div class="mb-4 text-center">
+                <div style="background-color: var(--primary-red); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-receipt fa-2x" style="color: white;"></i>
+                </div>
+                <h2 style="font-weight: 800; color: var(--dark-blue); text-transform: uppercase; letter-spacing: 1px;">Gestión de Pedidos</h2>
+                <div style="width: 50px; height: 4px; background: var(--primary-red); margin: 0.5rem auto; border-radius: 2px;"></div>
+            </div>
+
+            <div class="row justify-content-center g-3 mb-4">
+                <div class="col-auto">
+                    <a asp-action="AbrirMesa" class="btn btn-outline-custom px-4 py-2 shadow-sm">
+                        <i class="fa-solid fa-door-open me-2"></i> Abrir Mesa
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="Registrar" class="btn btn-system-red px-4 py-2 shadow-sm">
+                        <i class="fa-solid fa-plus me-2"></i> Nuevo Pedido
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="EnviarACocina" class="btn btn-dark px-4 py-2 shadow-sm" style="background-color: var(--dark-blue);">
+                        <i class="fa-solid fa-fire-burner me-2 text-warning"></i> Enviar a Cocina
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="CerrarMesa" class="btn btn-system-red px-4 py-2 shadow-sm">
+                        <i class="fa-solid fa-file-invoice-dollar me-2"></i> Cerrar Mesa
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="CambiarEstado" class="btn btn-dark px-4 py-2 shadow-sm" style="background-color: var(--dark-blue);">
+                        <i class="fa-solid fa-arrows-rotate me-2 text-info"></i> Cambiar Estado
+                    </a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mx-auto mb-4" style="max-width: 900px; border-radius: 15px;">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-center" style="color: var(--dark-blue);">
+                        <i class="fa-solid fa-list-check me-2 text-danger"></i> Gestión de Ítems del Pedido
+                    </h5>
+                </div>
+                <div class="card-body p-4 border-top">
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-md-4">
+                            <a asp-action="AgregarDetalle" class="btn w-100 shadow-sm py-2 bg-light fw-bold border" style="color: var(--dark-blue);">
+                                <i class="fa-solid fa-cart-plus me-2 text-success"></i> Agregar Detalle
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a asp-action="ActualizarDetalle" class="btn w-100 shadow-sm py-2 bg-light fw-bold border" style="color: var(--dark-blue);">
+                                <i class="fa-solid fa-pen-to-square me-2 text-warning"></i> Editar Detalle
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a asp-action="EliminarDetalle" class="btn btn-outline-danger w-100 shadow-sm py-2 fw-bold">
+                                <i class="fa-solid fa-trash-can me-2"></i> Eliminar Detalle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5 text-muted">
+                <i class="fa-solid fa-circle-info fa-2x mb-3" style="color: var(--primary-red);"></i>
+                <p class="fw-bold">Seleccione una operación superior para gestionar los pedidos del sistema.</p>
+            </div>
+
+        </div>
+    </div>
+</div>

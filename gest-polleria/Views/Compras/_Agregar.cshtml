@@ -1,0 +1,73 @@
+﻿@model appPolleria.Models.CompraDetalle
+<style>
+    /* Estilo para las tablas */
+    .table-roja {
+        width: 100%; /* ocupa todo el ancho disponible */
+        max-width: 100%; /* evita que se corte en contenedores */
+        border: 1px solid #e74c3c;
+        font-size: 1.1rem; /* aumenta tamaño del texto */
+    }
+
+        .table-roja thead {
+            background-color: #e74c3c;
+            color: #fff;
+            font-size: 1.2rem; /* tamaño un poco mayor para la cabecera */
+        }
+
+        .table-roja th,
+        .table-roja td {
+            border: 1px solid #e74c3c;
+            padding: 0.8rem; /* aumenta altura de las filas */
+            text-align: center;
+        }
+
+        .table-roja tbody tr:hover {
+            background-color: #fce4e1; /* hover suave sobre filas */
+        }
+</style>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Agregar Detalle de Compra</h5>
+    </div>
+
+    <div class="card-body">
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-info">
+                @ViewBag.Mensaje
+            </div>
+        }
+
+        <form asp-controller="ComprasDetalle" asp-action="Agregar" method="post">
+            <input asp-for="IdCompra" type="hidden" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="IdInsumo" class="form-label">Insumo</label>
+                    <input asp-for="IdInsumo" class="form-control" />
+                    <span asp-validation-for="IdInsumo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Cantidad" class="form-label">Cantidad</label>
+                    <input asp-for="Cantidad" class="form-control" />
+                    <span asp-validation-for="Cantidad" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CostoUnitario" class="form-label">Costo Unitario</label>
+                    <input asp-for="CostoUnitario" class="form-control" />
+                    <span asp-validation-for="CostoUnitario" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Botón Agregar Detalle -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-rojo">
+                    <i class="bi bi-plus-circle"></i> Agregar Detalle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

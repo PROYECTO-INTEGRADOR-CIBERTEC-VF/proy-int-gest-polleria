@@ -1,0 +1,34 @@
+﻿@model appPolleria.Models.UnidadMedida
+
+@{
+    ViewData["Title"] = "Nueva Unidad de Medida";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 text-warning"><i class="fas fa-balance-scale me-2"></i> Configurar Unidad de Medida</h5>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <form asp-action="RegistrarUnidad" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label fw-bold">Nombre Completo</label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Ej: Kilogramos" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Abreviatura" class="form-label fw-bold">Abreviatura / Símbolo</label>
+                            <input asp-for="Abreviatura" class="form-control" placeholder="Ej: Kg" />
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="ListadoUnidades" class="text-decoration-none text-muted mt-2">Volver al listado</a>
+                            <button type="submit" class="btn btn-warning fw-bold px-4">Registrar Unidad</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
