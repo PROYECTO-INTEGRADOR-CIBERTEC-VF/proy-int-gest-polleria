@@ -8,6 +8,6 @@
         public string DNI { get; set; }
         public string Telefono { get; set; }
         public string Turno { get; set; }
-        public bool Estado { get; set; }
+        public bool Activo { get; set; }
     }
 }

@@ -53,7 +53,8 @@
 
                 <div class="mb-4">
                     <div class="form-check form-switch">
-                        <input asp-for="Estado" type="checkbox" class="form-check-input" id="estadoCheck" checked />
+                        @* CAMBIADO: asp-for="Activo" en lugar de Estado *@
+                        <input asp-for="Activo" type="checkbox" class="form-check-input" id="estadoCheck" checked />
                         <label class="form-check-label fw-bold" for="estadoCheck">Empleado Activo</label>
                     </div>
                 </div>
@@ -62,7 +63,8 @@
                     <button type="submit" class="btn btn-success btn-lg">
                         <i class="bi bi-save"></i> Guardar Mesero
                     </button>
-                    <a asp-action="ListadoMeseros" class="btn btn-outline-secondary">
+                    @* CAMBIADO: asp-action="Index" para que regrese a tu listado principal *@
+                    <a asp-action="Index" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Volver al Listado
                     </a>
                 </div>
