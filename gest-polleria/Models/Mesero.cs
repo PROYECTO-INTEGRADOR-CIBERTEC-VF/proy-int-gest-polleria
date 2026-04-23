@@ -1,4 +1,4 @@
-﻿namespace gest_pollaria.Models
+﻿namespace gest_polleria.Models
 {
     public class Mesero
     {

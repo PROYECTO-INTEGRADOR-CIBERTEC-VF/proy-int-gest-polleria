@@ -32,7 +32,8 @@ namespace gest_polleria.DAO
                         Apellido = dr.GetString(2),
                         DNI = dr.GetString(3),
                         Telefono = dr.GetString(4),
-                        Estado = dr.GetBoolean(5)
+                        Estado = dr.GetBoolean(5),
+                        Turno = dr.GetString(6)
                     });
                 }
             }
