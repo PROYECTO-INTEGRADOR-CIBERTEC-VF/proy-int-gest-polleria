@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using gest_polleria.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using gest_polleria.DAO;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace gest_polleria.Controllers
 {
@@ -7,5 +11,60 @@ namespace gest_polleria.Controllers
     [ApiController]
     public class ClientesApiController : ControllerBase
     {
+        ClienteDAO _cliente = new ClienteDAO();
+
+        // GET: api/ClientesApi/listar?esEmpresa=true&buscar=...
+        [HttpGet("listar")]
+        public async Task<IEnumerable<Cliente>> listar([FromQuery] bool? esEmpresa = null, [FromQuery] string? buscar = null)
+        {
+            return await Task.Run(() => _cliente.listar(esEmpresa, buscar));
+        }
+
+        // GET: api/ClientesApi/buscar/5
+        [HttpGet("buscar/{id}")]
+        public async Task<Cliente?> buscar(int id)
+        {
+            return await Task.Run(() => _cliente.buscar(id));
+        }
+
+        // POST: api/ClientesApi/registrar
+        [HttpPost("registrar")]
+        public async Task<string> registrar([FromBody] Cliente c)
+        {
+            return await Task.Run(() =>
+            {
+                int idNuevo;
+                string msg = _cliente.insertar(c, out idNuevo);
+                return $"{msg} (IdClienteNuevo={idNuevo})";
+            });
+        }
+
+        // PUT: api/ClientesApi/actualizar
+        [HttpPut("actualizar")]
+        public async Task<string> actualizar([FromBody] Cliente c)
+        {
+            return await Task.Run(() => _cliente.actualizar(c));
+        }
+
+        // DELETE: api/ClientesApi/desactivar/5
+        [HttpDelete("desactivar/{id}")]
+        public async Task<string> desactivar(int id)
+        {
+            return await Task.Run(() => _cliente.desactivar(id));
+        }
+
+        // PUT: api/ClientesApi/activar/5
+        [HttpPut("activar/{id}")]
+        public async Task<string> activar(int id)
+        {
+            return await Task.Run(() => _cliente.activar(id));
+        }
+
+        // DELETE: api/ClientesApi/eliminar/5
+        [HttpDelete("eliminar/{id}")]
+        public async Task<string> eliminar(int id)
+        {
+            return await Task.Run(() => _cliente.eliminar(id));
+        }
     }
 }
