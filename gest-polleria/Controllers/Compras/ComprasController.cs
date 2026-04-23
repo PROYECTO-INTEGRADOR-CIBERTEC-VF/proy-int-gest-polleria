@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
+using gest_polleria.Models;
 
 namespace gest_polleria.Controllers.Compras
 {
