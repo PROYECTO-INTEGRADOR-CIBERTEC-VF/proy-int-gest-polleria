@@ -1,4 +1,4 @@
-﻿namespace appPolleria.Models
+﻿namespace gest_polleria.Models
 {
     public class UnidadMedida
     {

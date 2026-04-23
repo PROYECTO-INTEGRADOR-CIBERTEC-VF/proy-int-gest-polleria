@@ -1,7 +1,6 @@
 ﻿using gest_polleria.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using gest_polleria.UnidadMedida.Models;
 using System.Text;
 
 namespace appPolleria.Controllers.Mantenimiento
@@ -45,6 +44,7 @@ namespace appPolleria.Controllers.Mantenimiento
             }
             return View(lista);
         }
+
 
         public async Task<IActionResult> ListadoRoles()
         {
