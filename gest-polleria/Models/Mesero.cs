@@ -1,12 +1,13 @@
-﻿namespace gest_polleria.Models
+﻿namespace gest_pollaria.Models
 {
     public class Mesero
     {
         public int IdMesero { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public string Apellido { get; set; } = string.Empty;
-        public string DNI { get; set; } = string.Empty;
-        public string Telefono { get; set; } = string.Empty;
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string DNI { get; set; }
+        public string Telefono { get; set; }
+        public string Turno { get; set; }
         public bool Estado { get; set; }
     }
 }
