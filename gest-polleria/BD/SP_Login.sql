@@ -16,8 +16,11 @@ CREATE TABLE [dbo].[Usuarios](
     [UserName] [nvarchar](50) NOT NULL,
     [ClaveHash] [nvarchar](256) NOT NULL,
     [NombreCompleto] [nvarchar](150) NOT NULL,
+    [Email] [nvarchar](100) NULL,
+    [Telefono] [nvarchar](20) NULL,
     [IdRol] [int] NOT NULL,
     [Activo] [bit] NOT NULL DEFAULT(1),
+    [FechaRegistro] [datetime2](7) NOT NULL DEFAULT(SYSDATETIME()),
 PRIMARY KEY CLUSTERED ([IdUsuario] ASC),
 FOREIGN KEY ([IdRol]) REFERENCES [dbo].[Roles]([IdRol])
 )
