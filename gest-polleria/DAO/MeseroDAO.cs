@@ -39,5 +39,64 @@ namespace gest_polleria.DAO
             }
             return lista;
         }
+
+
+        //ASIGNAR MESERO A MESA/ZONA
+        public string AsignarMeseroMesa(int idMesero, int idMesa)
+        {
+            string mensaje = "";
+            using (SqlConnection cn = new SqlConnection(cadena))
+            {
+                try
+                {
+                    
+                    SqlCommand cmd = new SqlCommand("usp_AsignarMeseroMesa", cn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@idMesero", idMesero);
+                    cmd.Parameters.AddWithValue("@idMesa", idMesa);
+
+                    cn.Open();
+                    int i = cmd.ExecuteNonQuery();
+                    mensaje = $"Se asignó al mesero correctamente. Filas afectadas: {i}";
+                }
+                catch (SqlException ex)
+                {
+                    mensaje = "Error en la base de datos: " + ex.Message;
+                }
+            }
+            return mensaje;
+        }
+
+        //REGISTRAR MESERO
+        public string RegistrarMesero(Mesero reg)
+        {
+            string mensaje = "";
+            using (SqlConnection cn = new SqlConnection(cadena))
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("usp_RegistrarMesero", cn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // Mapeo de parámetros desde el modelo Mesero 
+                    cmd.Parameters.AddWithValue("@nombre", reg.Nombre);
+                    cmd.Parameters.AddWithValue("@apellido", reg.Apellido);
+                    cmd.Parameters.AddWithValue("@dni", reg.DNI);
+                    cmd.Parameters.AddWithValue("@telefono", reg.Telefono);
+                    cmd.Parameters.AddWithValue("@estado", reg.Estado);
+                    cmd.Parameters.AddWithValue("@turno", reg.Turno);
+
+                    cn.Open();
+                    int i = cmd.ExecuteNonQuery();
+                    mensaje = $"El mesero {reg.Nombre} {reg.Apellido} se registró con éxito.";
+                }
+                catch (SqlException ex)
+                {
+                    mensaje = "Error al registrar en la BD: " + ex.Message;
+                }
+            }
+            return mensaje;
+        }
     }
 }

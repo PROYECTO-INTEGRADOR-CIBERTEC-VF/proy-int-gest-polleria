@@ -1,0 +1,72 @@
+﻿@model gest_polleria.Models.Mesero
+
+@{
+    ViewData["Title"] = "Registrar Mesero";
+}
+
+<div class="container mt-4">
+    <div class="card shadow" style="max-width: 600px; margin: auto; border-radius: 15px;">
+        <div class="card-header bg-danger text-white" style="border-radius: 15px 15px 0 0;">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar Nuevo Mesero</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="RegistrarMesero" method="post">
+
+                @if (ViewBag.Mensaje != null)
+                {
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> @ViewBag.Mensaje
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Nombre</label>
+                        <input asp-for="Nombre" class="form-control" placeholder="Ej: Juan" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Apellido</label>
+                        <input asp-for="Apellido" class="form-control" placeholder="Ej: Pérez" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">DNI</label>
+                        <input asp-for="DNI" class="form-control" maxlength="8" placeholder="8 dígitos" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Teléfono</label>
+                        <input asp-for="Telefono" class="form-control" placeholder="999888777" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Turno de Trabajo</label>
+                    <select asp-for="Turno" class="form-select">
+                        <option value="Mañana">Mañana</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noche">Noche</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input asp-for="Estado" type="checkbox" class="form-check-input" id="estadoCheck" checked />
+                        <label class="form-check-label fw-bold" for="estadoCheck">Empleado Activo</label>
+                    </div>
+                </div>
+
+                <div class="text-center d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-save"></i> Guardar Mesero
+                    </button>
+                    <a asp-action="ListadoMeseros" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Listado
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

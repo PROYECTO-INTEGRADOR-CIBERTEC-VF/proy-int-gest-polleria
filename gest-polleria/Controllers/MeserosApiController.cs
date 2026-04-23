@@ -23,5 +23,22 @@ namespace gest_polleria.Controllers
             if (lista.Count == 0) return NotFound("No hay meseros registrados.");
             return Ok(lista);
         }
+
+        [HttpPost("registrar-meserobd")]
+        public IActionResult RegistrarMesero(Mesero reg)
+        {
+            // Llama al método RegistrarMesero del DAO
+            string mensaje = _dao.RegistrarMesero(reg);
+            return Ok(mensaje);
+        }
+
+        // POST: asignar-mesero-mesa
+        [HttpPost("asignar-mesero-mesa")]
+        public IActionResult AsignarMeseroMesa(int idMesero, int idMesa)
+        {
+            // Llama al método AsignarMeseroMesa del DAO
+            string mensaje = _dao.AsignarMeseroMesa(idMesero, idMesa);
+            return Ok(mensaje);
+        }
     }
 }
