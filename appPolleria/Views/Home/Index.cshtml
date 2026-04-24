@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión — Pollería</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #FDF6F0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        }
+        .brand { text-align: center; margin-bottom: 2rem; }
+        .brand-icon {
+            width: 56px; height: 56px;
+            background: #B85C38;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-icon svg { width: 30px; height: 30px; fill: #fff; }
+        .brand h1 { font-family: 'Playfair Display', serif; font-size: 22px; color: #1a1a1a; }
+        .brand p { font-size: 13px; color: #888; margin-top: 4px; }
+        .field { margin-bottom: 1.2rem; }
+        .field label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
+        .field input {
+            width: 100%; padding: 10px 14px;
+            border: 1px solid #ddd; border-radius: 8px;
+            font-size: 15px; font-family: 'DM Sans', sans-serif;
+            background: #fafafa; outline: none;
+            transition: border-color 0.15s;
+        }
+        .field input:focus { border-color: #B85C38; box-shadow: 0 0 0 3px rgba(184,92,56,0.1); }
+        .error-msg { color: #c0392b; font-size: 13px; margin-bottom: 1rem; text-align: center; }
+        .btn-login {
+            width: 100%; padding: 11px;
+            background: #B85C38; color: #fff;
+            border: none; border-radius: 8px;
+            font-size: 15px; font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; margin-top: 0.25rem;
+            transition: background 0.15s;
+        }
+        .btn-login:hover { background: #993C1D; }
+        .footer-note { text-align: center; font-size: 12px; color: #bbb; margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26C17.81 13.47 19 11.38 19 9c0-3.87-3.13-7-7-7zm2 14H10v-1h4v1zm0-3H10v-1h4v1z" /></svg>
+            </div>
+            <h1>Pollería Sistema</h1>
+            <p>Ingresa tus credenciales para continuar</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <p class="error-msg">@ViewBag.Error</p>
+        }
+
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+        {
+            <div class="field">
+                <label for="usuario">Usuario</label>
+                @Html.TextBox("usuario", "", new { id = "usuario", placeholder = "Tu nombre de usuario", @class = "form-input" })
+            </div>
+            <div class="field">
+                <label for="contrasena">Contraseña</label>
+                @Html.Password("contrasena", "", new { id = "contrasena", placeholder = "••••••••" })
+            </div>
+            <button type="submit" class="btn-login">Iniciar sesión</button>
+        }
+
+        <p class="footer-note">Sistema de Gestión — Cibertec 2025</p>
+    </div>
+</body>
+</html>
