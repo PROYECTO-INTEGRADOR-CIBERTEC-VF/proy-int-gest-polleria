@@ -1,0 +1,79 @@
+﻿@* Header superior *@
+<style>
+    .header {
+        position: fixed; /* Lo fijamos en la parte superior */
+        top: 0;
+        left: 250px; /* Comienza justo donde termina el sidebar */
+        right: 0; /* Se extiende hasta el borde derecho */
+        height: 70px; /* Definimos una altura fija para controlarlo mejor */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        padding: 0 2rem;
+        border-bottom: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        z-index: 999; /* Un nivel debajo del sidebar si fuera necesario */
+    }
+
+    /* Ajuste para el contenido principal */
+    .main-content {
+        margin-top: 70px; /* Para que el contenido no quede debajo del header fijo */
+        padding: 20px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .header-actions {
+        position: absolute;
+        right: 2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: #e74c3c;
+        border-radius: 50%;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .user-info div div:first-child {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .user-info div div:last-child {
+        font-size: 0.75rem;
+        color: #7f8c8d;
+    }
+</style>
+
+<header class="header">
+    <h1>@ViewBag.Titulo</h1>
+
+    <div class="header-actions">
+        <div class="user-info">
+            <div class="user-avatar">A</div>
+            <div>
+                <div>Admin</div>
+                <div>Administrador</div>
+            </div>
+        </div>
+    </div>
+</header>

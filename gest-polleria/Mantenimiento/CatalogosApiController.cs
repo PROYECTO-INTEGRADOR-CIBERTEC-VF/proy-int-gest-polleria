@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace appPolleria.Controllers.Mantenimiento
+namespace gest_polleria.Controllers.Mantenimiento
 {
     public class CatalogosApiController : Controller
     {

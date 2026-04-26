@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .card-custom {
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .titulo {
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #2c3e50;
+        }
+
+        .btn-rojo {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+            .btn-rojo:hover {
+                background-color: #c0392b;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <nav class="navbar bg-white shadow-sm px-4">
+        <span class="navbar-brand mx-auto fw-bold">Directorio Comercial</span>
+        <span class="text-muted">Admin</span>
+    </nav>
+
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

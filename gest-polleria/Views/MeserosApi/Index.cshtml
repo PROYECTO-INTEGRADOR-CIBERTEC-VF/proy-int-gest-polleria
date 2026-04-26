@@ -1,0 +1,319 @@
+﻿    @model IEnumerable<gest_polleria.Models.Mesero>
+
+    @{
+        ViewData["Title"] = "Gestión de Meseros";
+        ViewBag.Titulo = "Directorio Comercial";
+    }
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-red: #e74c3c;
+            --dark-blue: #2f3e50;
+            --bg-light: #f4f7f6;
+        }
+
+        body {
+            background-color: var(--bg-light);
+        }
+
+        .central-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 2.5rem;
+            width: 100%;
+        }
+
+        .mesero-inactive {
+            opacity: 0.6;
+            background-color: #f9f9f9;
+        }
+
+        .form-control-custom {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            height: 45px;
+            padding: 0 1rem;
+        }
+
+        .btn-filter {
+            background-color: #2f3e50;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            height: 45px;
+            border: none;
+            padding: 0 25px;
+        }
+
+        .btn-new {
+            background-color: var(--primary-red);
+            color: white !important;
+            border-radius: 8px;
+            font-weight: 600;
+            height: 45px;
+            padding: 0 25px;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none !important;
+            border: none;
+        }
+
+        .table-header-custom {
+            border-bottom: 2px solid var(--primary-red);
+            font-weight: 800;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .mesero-row td {
+            padding: 1.2rem 0.5rem;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .badge-pill-custom {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: 1px solid currentColor;
+        }
+
+        .badge-morning {
+            color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .badge-afternoon {
+            color: #9b59b6;
+            background: rgba(155, 89, 182, 0.1);
+        }
+
+        .badge-night {
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .badge-off {
+            color: #95a5a6;
+            background: rgba(149, 165, 166, 0.1);
+        }
+
+        .action-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            border: 1px solid #eee;
+            background: white;
+            text-decoration: none !important;
+            transition: 0.2s;
+        }
+
+            .action-circle:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .btn-edit {
+            color: #f39c12;
+        }
+
+        .btn-del {
+            color: #e74c3c;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .text-data-title {
+            display: block;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .text-data-sub {
+            display: block;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+    </style>
+
+    <div class="layout" style="display: flex; min-height: 100vh; width: 100%;">
+        @await Html.PartialAsync("~/Views/Dashboard/_Sidebar.cshtml")
+
+        <div class="content" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+            @await Html.PartialAsync("~/Views/Dashboard/_Header.cshtml")
+
+            <main class="central-container">
+                @* --- ALERTAS DE SISTEMA --- *@
+                @if (TempData["Mensaje"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fa fa-check-circle me-2"></i> @TempData["Mensaje"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["MensajeError"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa fa-exclamation-triangle me-2"></i> @TempData["MensajeError"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="text-center mb-5">
+                    <div style="background: #e74c3c; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                        <i class="fa-solid fa-address-book text-white fa-lg"></i>
+                    </div>
+                    <h1 style="font-weight: 900; color: #2c3e50; letter-spacing: -1px; margin:0; font-size: 2.2rem;">GESTIÓN <span style="color: var(--primary-red);">DE MESEROS</span></h1>
+                    <div style="width: 50px; height: 3px; background: var(--primary-red); margin: 8px auto 0;"></div>
+                </div>
+
+                <div class="glass-card">
+                    @* --- FORMULARIO DE FILTROS --- *@
+                    @* Nota: Cambiado asp-controller="MeserosApi" *@
+                    <form class="filter-bar" method="get" asp-controller="MeserosApi" asp-action="Index">
+                        <div style="width: 350px;">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa fa-search"></i></span>
+                                <input type="text" name="filtro" value="@ViewBag.FiltroActual" class="form-control form-control-custom border-start-0" placeholder="Buscar por DNI o Nombre...">
+                            </div>
+                        </div>
+
+                        <div style="width: 150px;">
+                            <select name="turno" class="form-select form-control-custom">
+                                <option value="">Todos los turnos</option>
+                                <option value="Mañana" selected="@(ViewBag.TurnoActual == "Mañana")">Mañana</option>
+                                <option value="Tarde" selected="@(ViewBag.TurnoActual == "Tarde")">Tarde</option>
+                                <option value="Noche" selected="@(ViewBag.TurnoActual == "Noche")">Noche</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-filter">
+                            <i class="fa fa-filter me-2"></i>Filtrar
+                        </button>
+
+                        <a asp-controller="MeserosApi" asp-action="RegistrarMesero" class="btn btn-new">
+                            <i class="fa fa-plus me-2"></i>Nuevo Mesero
+                        </a>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle w-100">
+                            <thead>
+                                <tr class="table-header-custom text-muted">
+                                    <th style="width: 18%; border:none;">Documento</th>
+                                    <th style="width: 32%; border:none;">Mesero / Apellidos</th>
+                                    <th style="width: 25%; border:none;">Contacto</th>
+                                    <th style="width: 12%; border:none;" class="text-center">Estado/Turno</th>
+                                    <th style="width: 13%; border:none;" class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="mesero-row @(item.Activo ? "" : "mesero-inactive")">
+                                            <td>
+                                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #eee; display: inline-block; min-width: 110px;">
+                                                    <small class="fw-bold text-muted" style="font-size: 10px; display: block;">DNI</small>
+                                                    <span class="fw-bold" style="color: #333;">@item.DNI</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-data-title text-uppercase">@item.Nombre @item.Apellido</span>
+                                                <span class="text-data-sub">
+                                                    <i class="fa fa-circle me-1 @(item.Activo ? "text-success" : "text-danger")" style="font-size: 8px;"></i>
+                                                    @(item.Activo ? "Sede Principal" : "Cuenta Desactivada")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="mb-1">
+                                                    <i class="fa fa-phone @(item.Activo ? "text-primary" : "text-muted")" style="font-size: 0.8rem;"></i>
+                                                    <span class="fw-bold" style="font-size: 0.9rem; color: #444;">@item.Telefono</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                @if (item.Activo)
+                                                {
+                                                    string badgeClass = item.Turno == "Mañana" ? "badge-morning" : (item.Turno == "Tarde" ? "badge-afternoon" : "badge-night");
+                                                    <span class="badge-pill-custom @badgeClass">@item.Turno</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge-pill-custom badge-off">Inactivo</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center">
+                                                    @* --- BOTÓN EDITAR --- *@
+                                                    <a asp-controller="MeserosApi" asp-action="EditarMesero" asp-route-id="@item.IdMesero" class="action-circle btn-edit" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+
+                                                @* --- INSERTAR AQUÍ EL BOTÓN DE ASIGNAR MESA --- *@
+                                                @if (item.Activo)
+                                                {
+                                                    <a asp-controller="MeserosApi" asp-action="AsignarMeseroMesa"
+                                                       asp-route-idMesero="@item.IdMesero"
+                                                       class="action-circle text-primary"
+                                                       title="Asignar Mesa">
+                                                        <i class="fa-solid fa-utensils"></i>
+                                                    </a>
+                                                }
+
+                                                    @* --- BOTÓN DINÁMICO: ACTIVAR / DESACTIVAR --- *@
+                                                    <a asp-controller="MeserosApi" asp-action="CambiarEstado" asp-route-id="@item.IdMesero"
+                                                       class="action-circle @(item.Activo ? "btn-del" : "text-success")"
+                                                       onclick="return confirm('¿Desea cambiar el estado de este mesero?')"
+                                                       title="@(item.Activo ? "Desactivar" : "Activar")">
+
+                                                        @if (item.Activo)
+                                                        {
+                                                            <i class="fa-solid fa-user-slash"></i> @* Icono para desactivar *@
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="fa-solid fa-user-check"></i> @* Icono para activar *@
+                                                        }
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">No se encontraron meseros en el sistema.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>

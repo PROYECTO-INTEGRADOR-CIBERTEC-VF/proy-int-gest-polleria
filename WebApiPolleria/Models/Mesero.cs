@@ -1,28 +1,13 @@
-﻿using Newtonsoft.Json;
-
-namespace gest_polleria.Models
+﻿namespace WebApiPolleria.Models
 {
     public class Mesero
     {
-        [JsonProperty("idMesero")]
         public int IdMesero { get; set; }
-
-        [JsonProperty("nombre")]
         public string Nombre { get; set; }
-
-        [JsonProperty("apellido")]
         public string Apellido { get; set; }
-
-        [JsonProperty("dni")]
         public string DNI { get; set; }
-
-        [JsonProperty("telefono")]
         public string Telefono { get; set; }
-
-        [JsonProperty("turno")]
         public string Turno { get; set; }
-
-        [JsonProperty("activo")]
         public bool Activo { get; set; } = true;
     }
 }

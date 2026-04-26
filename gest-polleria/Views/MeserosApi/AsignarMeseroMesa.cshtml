@@ -1,0 +1,175 @@
+﻿@model gest_polleria.Models.AsignacionMeseros
+@{
+    ViewData["Title"] = "Asignar Mesa";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary-red: #e74c3c;
+        --dark-blue: #2f3e50;
+        --bg-light: #f4f7f6;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .central-container {
+        max-width: 450px;
+        margin: 60px auto;
+    }
+
+    .glass-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: none;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .card-body-custom {
+        padding: 2.5rem;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-right: none;
+        color: #adb5bd;
+        border-radius: 10px 0 0 10px;
+        width: 45px;
+        justify-content: center;
+    }
+
+    .form-control-custom {
+        border: 1px solid #dee2e6;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        height: 50px;
+        font-weight: 600;
+    }
+
+    .btn-save {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        width: 100%;
+        height: 55px;
+        font-weight: 700;
+        text-transform: uppercase;
+        transition: 0.3s;
+        margin-top: 1rem;
+    }
+
+        .btn-save:hover {
+            background-color: #2c3e50;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+</style>
+
+<div class="central-container">
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success shadow-sm mb-4 border-0 animate__animated animate__fadeIn">
+            <i class="fa fa-check-circle me-2"></i> @TempData["Mensaje"]
+        </div>
+    }
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger shadow-sm mb-4 border-0 animate__animated animate__shakeX">
+            <i class="fa fa-times-circle me-2"></i> @TempData["MensajeError"]
+        </div>
+    }
+
+    <div class="glass-card">
+        <div class="card-header-custom">
+            <i class="fa-solid fa-utensils fa-3x mb-3"></i>
+            <h2 class="m-0" style="font-weight: 800;">SERVICIO DE MESA</h2>
+            <p class="opacity-75 m-0">Vincular personal al salón</p>
+        </div>
+
+        <div class="card-body-custom">
+
+            <form asp-action="AsignarMeseroMesa" method="post">
+
+                <div class="mb-4">
+                    <label class="form-label">Mesero Seleccionado</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-user-tie"></i></span>
+                        <input type="text" class="form-control form-control-custom bg-white"
+                               value="@(ViewBag.NombreMesero ?? "No seleccionado")" readonly />
+
+                        <input type="hidden" name="idMesero" value="@ViewBag.IdMeseroSeleccionado" />
+                    </div>
+                    @if (ViewBag.NombreMesero == null)
+                    {
+                        <small class="text-danger">Por favor, seleccione un mesero desde el listado.</small>
+                    }
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Seleccionar Mesa Disponible</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-hashtag"></i></span>
+
+                        @if (ViewBag.ListaMesas != null && ((List<gest_polleria.Models.Mesa>)ViewBag.ListaMesas).Count > 0)
+                        {
+                            <select name="idMesa" class="form-select form-control-custom" required>
+                                <option value="">-- Seleccione una mesa libre --</option>
+                                @foreach (var mesa in (List<gest_polleria.Models.Mesa>)ViewBag.ListaMesas)
+                                {
+                                    <option value="@mesa.IdMesa">Mesa #@mesa.NumeroMesa - Capacidad: @mesa.Capacidad</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <select class="form-select form-control-custom border-danger" disabled>
+                                <option>⚠️ NO HAY MESAS DISPONIBLES</option>
+                            </select>
+                        }
+                    </div>
+
+                   
+                    @if (ViewBag.ListaMesas == null || ((List<gest_polleria.Models.Mesa>)ViewBag.ListaMesas).Count == 0)
+                    {
+                        <small class="text-danger fw-bold d-block mt-2">
+                            <i class="fa fa-exclamation-triangle"></i> Todas las mesas están ocupadas actualmente.
+                        </small>
+                    }
+                </div>
+
+                <button type="submit" class="btn btn-save" @(ViewBag.IdMeseroSeleccionado == null ? "disabled" : "")>
+                    <i class="fa-solid fa-save me-2"></i> Confirmar Asignación
+                </button>
+
+                <a asp-action="Index" class="btn btn-link w-100 mt-3 text-decoration-none text-muted fw-bold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

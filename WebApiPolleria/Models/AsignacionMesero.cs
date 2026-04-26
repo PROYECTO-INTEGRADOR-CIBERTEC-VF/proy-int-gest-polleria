@@ -6,7 +6,7 @@ namespace gest_polleria.Models
     public class AsignacionMeseros
     {
         [Key]
-        public int IdAsignacion { get; set; } 
+        public int IdAsignacion { get; set; }
 
         [Required]
         public int IdMesero { get; set; }

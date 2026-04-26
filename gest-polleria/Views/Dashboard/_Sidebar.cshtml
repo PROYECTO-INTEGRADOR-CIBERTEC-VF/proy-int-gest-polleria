@@ -1,0 +1,173 @@
+﻿@* Sidebar / Menú lateral *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+@{
+    // Detectamos el controlador y la acción actual para activar los enlaces
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<style>
+    /* ===== DISEÑO DE PÁGINA ===== */
+    body {
+        margin: 0;
+        padding-left: 250px;
+        min-height: 100vh;
+    }
+
+    /* ===== ASIDE ===== */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background-color: #2f3e50;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .logo-section {
+        padding: 1.5rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #e74c3c;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .logo-text {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .logo-subtitle {
+        font-size: 0.8rem;
+        color: #bdc3c7;
+    }
+
+    .menu-section {
+        flex: 1;
+        padding: 1rem 0.5rem;
+        overflow-y: auto;
+    }
+
+    .menu-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin: 1rem 0 0.5rem 0.5rem;
+        color: #95a5a6;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        color: #ecf0f1;
+        text-decoration: none;
+        margin-bottom: 0.25rem;
+        transition: background 0.2s;
+    }
+
+        /* Hover y active pintan en rojo */
+        .menu-item:hover,
+        .menu-item.active {
+            background-color: #e74c3c;
+            color: #fff !important;
+        }
+
+    .menu-icon {
+        margin-right: 0.75rem;
+        width: 20px;
+        text-align: center;
+    }
+</style>
+
+<aside class="sidebar">
+    <div class="logo-section">
+        <div class="logo-icon">P</div>
+        <div class="logo-text">Pollería System</div>
+        <div class="logo-subtitle">Panel de Gestión</div>
+    </div>
+
+    <nav class="menu-section">
+        <div class="menu-title">Principal</div>
+
+        @* CORREGIDO: Ahora apunta a Index para mostrar los botones *@
+        <a asp-controller="Dashboard" asp-action="Index"
+           class="menu-item @(currentController == "Dashboard" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span> Dashboard
+        </a>
+
+        <div class="menu-title">Operaciones</div>
+        <a asp-controller="Compras" asp-action="Compra"
+           class="menu-item @(currentController == "Compras" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Compras
+        </a>
+        <a asp-controller="Mesa" asp-action="Mesa"
+           class="menu-item @(currentController == "Mesa" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-table"></i></span> Mesas
+        </a>
+        <a asp-controller="Pedidos" asp-action="Pedido"
+           class="menu-item @(currentController == "Pedidos" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-receipt"></i></span> Pedidos
+        </a>
+
+        <a asp-controller="ProductosApi" asp-action="ListadoProductosCarta"
+           class="menu-item @(currentController == "ProductosApi" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-box"></i></span> Productos
+        </a>
+
+        <a asp-controller="InsumosApi" asp-action="ListadoInsumos"
+           class="menu-item @(currentController == "InsumosApi" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-apple-whole"></i></span> Insumos
+        </a>
+
+        <a asp-controller="ProductosInsumosApi" asp-action="ListadoRecetaProducto"
+           class="menu-item @(currentController == "ProductosInsumosApi" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-kitchen-set"></i></span> Recetas
+        </a>
+
+        <div class="menu-title">Administración</div>
+
+        <a asp-controller="ClientesApi" asp-action="ListadoClientes"
+           class="menu-item @(currentController == "ClientesApi" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-address-book"></i></span> Clientes
+        </a>
+
+        <a asp-controller="Usuarios" asp-action="Index"
+           class="menu-item @(currentController == "Usuarios" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-users"></i></span> Usuarios
+        </a>
+        <a asp-controller="Proveedor" asp-action="Proveedor"
+           class="menu-item @(currentController == "Proveedor" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-truck-field"></i></span> Proveedores
+        </a>
+
+        <a asp-controller="CatalogosApi" asp-action="ListadoCategorias"
+           class="menu-item @(currentController == "CatalogosApi" && currentAction == "ListadoCategorias" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-layer-group"></i></span> Catálogos
+        </a>
+
+        <a asp-controller="CatalogosApi" asp-action="ListadoRoles"
+           class="menu-item @(currentController == "CatalogosApi" && currentAction == "ListadoRoles" ? "active" : "")">
+            <span class="menu-icon"><i class="fa-solid fa-user-gear"></i></span> Roles
+        </a>
+
+    </nav>
+</aside>
