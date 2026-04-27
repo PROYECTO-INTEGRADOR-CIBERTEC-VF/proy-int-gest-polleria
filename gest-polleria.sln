@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36915.13 d17.14
+VisualStudioVersion = 17.14.36915.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gest-polleria", "gest-polleria\gest-polleria.csproj", "{B5B9E75A-3883-4396-87A7-8422EC0C8F83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appPolleria", "appPolleria\appPolleria.csproj", "{AC197F6F-1580-455F-BA4E-896031288C76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B5B9E75A-3883-4396-87A7-8422EC0C8F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5B9E75A-3883-4396-87A7-8422EC0C8F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5B9E75A-3883-4396-87A7-8422EC0C8F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC197F6F-1580-455F-BA4E-896031288C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC197F6F-1580-455F-BA4E-896031288C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC197F6F-1580-455F-BA4E-896031288C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC197F6F-1580-455F-BA4E-896031288C76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
