@@ -1,0 +1,122 @@
+﻿@model gest_polleria_front.Models.ReportesIndexViewModel
+@{
+    ViewBag.Title = "Reportes";
+}
+
+<section class="page-hero">
+    <p class="page-kicker">REPORTES</p>
+    <h1 class="page-title">Demanda y consumo visible</h1>
+    <p class="page-subtitle">Consulta la actividad diaria o revisa un periodo completo.</p>
+</section>
+
+<section class="metric-grid metric-grid-small">
+    <article class="metric-card">
+        <span class="metric-label">Total pedidos</span>
+        <strong class="metric-value">@Model.TotalPedidos</strong>
+        <p class="metric-meta">Acumulado del filtro actual.</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Total estimado</span>
+        <strong class="metric-value">S/ @Model.TotalEstimado.ToString("0.00")</strong>
+        <p class="metric-meta">Suma calculada para el filtro actual.</p>
+    </article>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Reporte diario</h2>
+                <p class="panel-subtitle">Consulta un solo día.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Index", "Reportes", FormMethod.Get, new { @class = "form-grid" }))
+            {
+                <input type="hidden" name="tipo" value="diario" />
+
+                <div class="field field-full">
+                    <label for="fecha">Fecha</label>
+                    <input id="fecha" name="fecha" type="date" class="input-control" value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Consultar día</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Reporte por rango</h2>
+                <p class="panel-subtitle">Cruza varios días para ver tendencia.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Index", "Reportes", FormMethod.Get, new { @class = "form-grid" }))
+            {
+                <input type="hidden" name="tipo" value="rango" />
+
+                <div class="field">
+                    <label for="fechaInicio">Desde</label>
+                    <input id="fechaInicio" name="fechaInicio" type="date" class="input-control" value="@Model.FechaInicio.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="field">
+                    <label for="fechaFin">Hasta</label>
+                    <input id="fechaFin" name="fechaFin" type="date" class="input-control" value="@Model.FechaFin.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-secondary">Consultar rango</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-full">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Resultado @Model.TipoConsulta</h2>
+                <p class="panel-subtitle">Detalle de pedidos y total estimado por mesa o fecha.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (Model.Resultados.Count == 0)
+            {
+                <div class="empty-state">No hay datos para los filtros actuales.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Código de mesa</th>
+                                <th>Mesa</th>
+                                <th>Pedidos</th>
+                                <th>Total estimado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Resultados)
+                            {
+                                <tr>
+                                    <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
+                                    <td>@(item.IdMesa.HasValue ? item.IdMesa.Value.ToString() : "-")</td>
+                                    <td>@(item.NumeroMesa.HasValue ? item.NumeroMesa.Value.ToString() : "-")</td>
+                                    <td>@item.CantidadPedidos</td>
+                                    <td>S/ @item.TotalEstimado.ToString("0.00")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+</section>
