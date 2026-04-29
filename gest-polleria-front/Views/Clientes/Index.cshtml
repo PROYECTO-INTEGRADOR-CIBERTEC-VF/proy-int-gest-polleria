@@ -1,0 +1,155 @@
+﻿@model gest_polleria_front.Models.ClientesIndexViewModel
+@{
+    ViewBag.Title = "Clientes";
+}
+
+<section class="page-hero">
+    <p class="page-kicker">CLIENTES</p>
+    <h1 class="page-title">Base de clientes</h1>
+    <p class="page-subtitle">Consulta y registro de clientes.</p>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-wide">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Listado</h2>
+                <p class="panel-subtitle">@Model.Clientes.Count registro(s) visibles.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Index", "Clientes", FormMethod.Get, new { @class = "filter-bar" }))
+            {
+                <div class="field">
+                    <label for="buscar">Buscar</label>
+                    <input id="buscar" name="buscar" class="input-control" value="@Model.Buscar" placeholder="Nombre, razon social o documento" />
+                </div>
+
+                <div class="field">
+                    <label for="FiltroEsEmpresa">Tipo</label>
+                    <select id="FiltroEsEmpresa" name="esEmpresa" class="input-control">
+                        <option value="">Todos</option>
+                        <option value="false" @(Model.EsEmpresa == false ? "selected" : null)>Persona</option>
+                        <option value="true" @(Model.EsEmpresa == true ? "selected" : null)>Empresa</option>
+                    </select>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-secondary">Filtrar</button>
+                    @Html.ActionLink("Limpiar", "Index", "Clientes", null, new { @class = "btn btn-ghost" })
+                </div>
+            }
+
+            @if (Model.Clientes.Count == 0)
+            {
+                <div class="empty-state">No hay clientes para los filtros seleccionados.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Documento</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cliente in Model.Clientes)
+                            {
+                                <tr>
+                                    <td>@cliente.IdCliente</td>
+                                    <td>@cliente.NombreDisplay</td>
+                                    <td>@cliente.NumeroDocumento</td>
+                                    <td>@(string.IsNullOrWhiteSpace(cliente.Telefono) ? "-" : cliente.Telefono)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(cliente.Email) ? "-" : cliente.Email)</td>
+                                    <td>@(cliente.EsEmpresa ? "Empresa" : "Persona")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Nuevo cliente</h2>
+                <p class="panel-subtitle">Registro rápido de clientes.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Crear", "Clientes", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+
+                <div class="field">
+                    <label for="TipoDocumento">Tipo documento</label>
+                    <select id="TipoDocumento" name="TipoDocumento" class="input-control">
+                        <option value="DNI" @(Model.NuevoCliente.TipoDocumento == "DNI" ? "selected" : null)>DNI</option>
+                        <option value="RUC" @(Model.NuevoCliente.TipoDocumento == "RUC" ? "selected" : null)>RUC</option>
+                        <option value="CE" @(Model.NuevoCliente.TipoDocumento == "CE" ? "selected" : null)>CE</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="NumeroDocumento">Número de documento</label>
+                    <input id="NumeroDocumento" name="NumeroDocumento" class="input-control" value="@Model.NuevoCliente.NumeroDocumento" />
+                </div>
+
+                <div class="field">
+                    <label for="ClienteEsEmpresa">Tipo cliente</label>
+                    <select id="ClienteEsEmpresa" name="EsEmpresa" class="input-control">
+                        <option value="false" @(!Model.NuevoCliente.EsEmpresa ? "selected" : null)>Persona</option>
+                        <option value="true" @(Model.NuevoCliente.EsEmpresa ? "selected" : null)>Empresa</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="RazonSocial">Razon social</label>
+                    <input id="RazonSocial" name="RazonSocial" class="input-control" value="@Model.NuevoCliente.RazonSocial" />
+                </div>
+
+                <div class="field">
+                    <label for="Nombres">Nombres</label>
+                    <input id="Nombres" name="Nombres" class="input-control" value="@Model.NuevoCliente.Nombres" />
+                </div>
+
+                <div class="field">
+                    <label for="Apellidos">Apellidos</label>
+                    <input id="Apellidos" name="Apellidos" class="input-control" value="@Model.NuevoCliente.Apellidos" />
+                </div>
+
+                <div class="field field-full">
+                    <label for="Direccion">Direccion</label>
+                    <input id="Direccion" name="Direccion" class="input-control" value="@Model.NuevoCliente.Direccion" />
+                </div>
+
+                <div class="field">
+                    <label for="Telefono">Teléfono</label>
+                    <input id="Telefono" name="Telefono" class="input-control" value="@Model.NuevoCliente.Telefono" />
+                </div>
+
+                <div class="field">
+                    <label for="Email">Correo</label>
+                    <input id="Email" name="Email" class="input-control" value="@Model.NuevoCliente.Email" />
+                </div>
+
+                <div class="field field-full">
+                    <p class="helper-text">Si es empresa, completa la razón social. Si es persona, completa nombres y apellidos.</p>
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Registrar cliente</button>
+                </div>
+            }
+        </div>
+    </article>
+</section>
