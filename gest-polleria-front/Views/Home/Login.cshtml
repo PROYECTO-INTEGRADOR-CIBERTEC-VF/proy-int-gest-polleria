@@ -1,0 +1,45 @@
+﻿@model gest_polleria_front.Models.LoginPageViewModel
+@{
+    ViewBag.Title = "Ingreso";
+}
+<section class="login-shell">
+    <div class="login-side">
+        <p class="page-kicker">GESTION OPERATIVA</p>
+        <h1 class="page-title">Polleria "La Matriarca"</h1>
+        <p class="page-subtitle">
+            Inicia sesion con tus contraseñas
+        </p>
+    </div>
+    <div class="login-card">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Acceso</h2>
+                
+            </div>
+        </div>
+
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "panel-body form-grid" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+
+            <div class="field field-full">
+                <label for="UserName">Usuario</label>
+                @Html.TextBoxFor(m => m.UserName, new { @class = "input-control", autocomplete = "username", placeholder = "usuario" })
+            </div>
+
+            <div class="field field-full">
+                <label for="ClaveHash">Clave</label>
+                @Html.PasswordFor(m => m.ClaveHash, new { @class = "input-control", autocomplete = "current-password", placeholder = "********" })
+            </div>
+            <div class="field field-full">
+                <p class="helper-text">
+                    Utiliza las contraseñas otorgadas por el administrador.
+                </p>
+            </div>
+            <div class="actions field-full">
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+            </div>
+        }
+    </div>
+</section>
