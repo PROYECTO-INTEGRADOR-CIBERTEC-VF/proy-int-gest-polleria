@@ -1,0 +1,119 @@
+﻿@model gest_polleria_front.Models.InsumosIndexViewModel
+@{
+    ViewBag.Title = "Insumos";
+}
+
+<section class="page-hero">
+    <p class="page-kicker">INSUMOS</p>
+    <h1 class="page-title">Stock y alertas</h1>
+    <p class="page-subtitle">Revisa existencias y registra nuevos insumos.</p>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-wide">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Monitoreo de stock</h2>
+                <p class="panel-subtitle">
+                    @(Model.MostrarAlertas ? "Vista filtrada por alertas cercanas al mínimo." : "Reporte completo de stock disponible.")
+                </p>
+            </div>
+            <div class="panel-actions">
+                @Html.ActionLink("Reporte completo", "Index", "Insumos", new { mostrarAlertas = false }, new { @class = Model.MostrarAlertas ? "btn btn-ghost" : "btn btn-secondary" })
+                @Html.ActionLink("Ver alertas", "Index", "Insumos", new { mostrarAlertas = true, porcentaje = Model.PorcentajeAlerta }, new { @class = Model.MostrarAlertas ? "btn btn-secondary" : "btn btn-ghost" })
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Index", "Insumos", FormMethod.Get, new { @class = "filter-bar" }))
+            {
+                <input type="hidden" name="mostrarAlertas" value="true" />
+
+                <div class="field">
+                    <label for="porcentaje">Porcentaje alerta</label>
+                    <input id="porcentaje" name="porcentaje" class="input-control" value="@Model.PorcentajeAlerta" />
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-secondary">Actualizar alertas</button>
+                </div>
+            }
+
+            @if (Model.StockItems.Count == 0)
+            {
+                <div class="empty-state">No hay datos de stock para mostrar.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Insumo</th>
+                                <th>Stock actual</th>
+                                <th>Stock mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.StockItems)
+                            {
+                                <tr>
+                                    <td>@item.IdInsumo</td>
+                                    <td>@item.Insumo</td>
+                                    <td>@item.StockActual.ToString("0.##")</td>
+                                    <td>@item.StockMinimo.ToString("0.##")</td>
+                                    <td><span class="badge @item.EstadoCssClass">@item.EstadoStock</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Nuevo insumo</h2>
+                <p class="panel-subtitle">Registro con unidad, mínimo y cantidad actual.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Crear", "Insumos", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+
+                <div class="field field-full">
+                    <label for="Nombre">Nombre</label>
+                    <input id="Nombre" name="Nombre" class="input-control" value="@Model.NuevoInsumo.Nombre" />
+                </div>
+
+                <div class="field">
+                    <label for="IdUnidadMedida">Unidad</label>
+                    <select id="IdUnidadMedida" name="IdUnidadMedida" class="input-control">
+                        <option value="1" @(Model.NuevoInsumo.IdUnidadMedida == 1 ? "selected" : null)>Unidad</option>
+                        <option value="2" @(Model.NuevoInsumo.IdUnidadMedida == 2 ? "selected" : null)>Kg</option>
+                        <option value="3" @(Model.NuevoInsumo.IdUnidadMedida == 3 ? "selected" : null)>Litro</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="StockMinimo">Stock mínimo</label>
+                    <input id="StockMinimo" name="StockMinimo" class="input-control" value="@Model.NuevoInsumo.StockMinimo" />
+                </div>
+
+                <div class="field field-full">
+                    <label for="StockActual">Stock actual</label>
+                    <input id="StockActual" name="StockActual" class="input-control" value="@Model.NuevoInsumo.StockActual" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Registrar insumo</button>
+                </div>
+            }
+        </div>
+    </article>
+</section>
