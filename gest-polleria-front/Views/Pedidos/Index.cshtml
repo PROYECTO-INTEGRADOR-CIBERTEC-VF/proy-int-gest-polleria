@@ -1,0 +1,888 @@
+﻿@model gest_polleria_front.Models.PedidosIndexViewModel
+@{
+    ViewBag.Title = "Pedidos";
+    var activeForm = ViewBag.ActiveForm as string ?? string.Empty;
+    var isMeseroMode = object.Equals(ViewBag.MeseroMode, true);
+    var mesasDisponibles = Model.Mesas.Where(m => m.Activa && !string.Equals(m.Estado, "OCUPADA", StringComparison.OrdinalIgnoreCase)).OrderBy(m => m.NumeroMesa).ToList();
+    var meserosActivos = Model.Meseros.Where(m => m.Activo).OrderBy(m => m.NombreCompleto).ToList();
+    var pedidosAbiertos = Model.PedidosAbiertos.OrderByDescending(p => p.IdPedido).ToList();
+    var pedidosAbiertosIds = new HashSet<int>(pedidosAbiertos.Select(p => p.IdPedido));
+    var pedidosOperativos = Model.PedidosOperativos.OrderByDescending(p => p.IdPedido).ToList();
+    var pedidosListado = isMeseroMode ? pedidosOperativos.Where(p => pedidosAbiertosIds.Contains(p.IdPedido)).ToList() : pedidosOperativos;
+    var carta = Model.Carta.OrderBy(c => c.Categoria).ThenBy(c => c.Nombre).ToList();
+    var detallePedidoUrl = Url.Action("DetallePedido", "Pedidos");
+}
+
+<section class="page-hero">
+    <p class="page-kicker">@(isMeseroMode ? "MESERO" : "PEDIDOS")</p>
+    <h1 class="page-title">@(isMeseroMode ? "Atencion de mesas" : "Flujo operativo de pedidos")</h1>
+    @if (isMeseroMode)
+    {
+        <p class="page-subtitle">Abre mesas, agrega productos al pedido, envia la comanda a cocina y cierra la mesa desde una sola vista.</p>
+    }
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-full">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">@(isMeseroMode ? "Pedidos abiertos" : "Listado de pedidos")</h2>
+                <p class="panel-subtitle">@(isMeseroMode ? "Selecciona un pedido para agregar productos o revisar su detalle." : "Tablero operativo para seguir estado, mesa, tipo y total.")</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (pedidosListado.Count == 0)
+            {
+                <div class="empty-state">@(isMeseroMode ? "No hay pedidos abiertos para atender." : "No hay pedidos registrados para mostrar.")</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Pedido</th>
+                                <th>Fecha</th>
+                                <th>Mesa</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Mesero</th>
+                                <th>Total</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pedido in pedidosListado)
+                            {
+                                <tr>
+                                    <td>@pedido.IdPedido</td>
+                                    <td>@pedido.FechaHora</td>
+                                    <td>@(pedido.NumeroMesa.HasValue ? pedido.NumeroMesa.Value.ToString() : "-")</td>
+                                    <td>@pedido.TipoPedido</td>
+                                    <td>@pedido.EstadoPedido</td>
+                                    <td>@(string.IsNullOrWhiteSpace(pedido.Mesero) ? "-" : pedido.Mesero)</td>
+                                    <td>S/ @pedido.TotalEstimado.ToString("0.00")</td>
+                                    <td>
+                                        @if (pedidosAbiertosIds.Contains(pedido.IdPedido))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-plus js-open-detalle"
+                                                    data-pedido-id="@pedido.IdPedido"
+                                                    data-pedido-mesa="@(pedido.NumeroMesa.HasValue ? pedido.NumeroMesa.Value.ToString() : "-")">
+                                                +
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    @if (!isMeseroMode)
+    {
+        <article class="panel panel-full">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">Referencia de mesas</h2>
+                    <p class="panel-subtitle">Consulta la mesa antes de abrir o cerrar pedidos.</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                @if (Model.Mesas.Count == 0)
+                {
+                    <div class="empty-state">No hay mesas disponibles para mostrar.</div>
+                }
+                else
+                {
+                    <div class="table-shell">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Mesa</th>
+                                    <th>Capacidad</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var mesa in Model.Mesas)
+                                {
+                                    <tr>
+                                        <td>@mesa.IdMesa</td>
+                                        <td>@mesa.NumeroMesa</td>
+                                        <td>@mesa.Capacidad</td>
+                                        <td><span class="badge @mesa.EstadoCssClass">@mesa.Estado</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </article>
+    }
+
+    <article class="panel @(isMeseroMode ? "panel-half" : "panel-compact")">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Abrir mesa</h2>
+                <p class="panel-subtitle">Genera el pedido inicial para la atención.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("AbrirMesa", "Pedidos", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "abrirMesa")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field">
+                    <label for="IdMesa">Mesa</label>
+                    <select id="IdMesa" name="IdMesa" class="input-control">
+                        <option value="">Selecciona mesa</option>
+                        @foreach (var mesa in mesasDisponibles)
+                        {
+                            <option value="@mesa.IdMesa" @(Model.Apertura.IdMesa == mesa.IdMesa ? "selected" : null)>Mesa @mesa.NumeroMesa</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="IdTipoPedido">Tipo pedido</label>
+                    <select id="IdTipoPedido" name="IdTipoPedido" class="input-control">
+                        <option value="1" @(Model.Apertura.IdTipoPedido == 1 ? "selected" : null)>1 - Salon</option>
+                        <option value="2" @(Model.Apertura.IdTipoPedido == 2 ? "selected" : null)>2 - Delivery</option>
+                        <option value="3" @(Model.Apertura.IdTipoPedido == 3 ? "selected" : null)>3 - Para llevar</option>
+                    </select>
+                </div>
+
+                if (isMeseroMode)
+                {
+                    <input type="hidden" id="IdMesero" name="IdMesero" value="@(Model.Apertura.IdMesero.HasValue ? Model.Apertura.IdMesero.Value.ToString() : "")" />
+                    <div class="pedido-selection-strip field-full">
+                        <span class="pedido-selection-label">Mesero</span>
+                        <strong>@(Context.Session["AuthNombre"] as string ?? Context.Session["AuthUser"] as string ?? "Mesero")</strong>
+                    </div>
+                }
+                else
+                {
+                    <div class="field field-full">
+                        <label for="IdMesero">Mesero</label>
+                        <select id="IdMesero" name="IdMesero" class="input-control">
+                            <option value="">Sin asignar</option>
+                            @foreach (var mesero in meserosActivos)
+                            {
+                                <option value="@mesero.IdUsuario" @(Model.Apertura.IdMesero == mesero.IdUsuario ? "selected" : null)>@mesero.NombreCompleto</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Abrir mesa</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel @(isMeseroMode ? "panel-half" : "panel-compact")">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Flujo del pedido</h2>
+                <p class="panel-subtitle">Mueve el pedido a cocina o cierra la mesa.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("EnviarACocina", "Pedidos", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "estadoPedido")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field field-full">
+                    <label for="GestionIdPedido">Pedido</label>
+                    <select id="GestionIdPedido" name="IdPedido" class="input-control">
+                        <option value="">Selecciona pedido</option>
+                        @foreach (var pedido in pedidosAbiertos)
+                        {
+                            <option value="@pedido.IdPedido" @(Model.Gestion.IdPedido == pedido.IdPedido ? "selected" : null)>Pedido @pedido.IdPedido - Mesa @pedido.NumeroMesa (@pedido.EstadoPedido)</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Enviar a cocina</button>
+                    <button type="submit" class="btn btn-secondary" formaction="@Url.Action("CerrarMesa", "Pedidos")">Cerrar mesa</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    @if (!isMeseroMode)
+    {
+        <article class="panel panel-full">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">Carta completa</h2>
+                    <p class="panel-subtitle">Visualiza productos y precios, y agrega directamente al pedido seleccionado.</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                @if (carta.Count == 0)
+                {
+                    <div class="empty-state">No hay productos en carta para mostrar.</div>
+                }
+                else
+                {
+                    <div class="table-shell">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoria</th>
+                                    <th>Precio</th>
+                                    <th>Delivery</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var producto in carta)
+                                {
+                                    <tr>
+                                        <td>@producto.Nombre</td>
+                                        <td>@producto.Categoria</td>
+                                        <td>S/ @producto.PrecioVenta.ToString("0.00")</td>
+                                        <td>@(producto.ParaDelivery ? "Si" : "No")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </article>
+    }
+</section>
+
+<div id="pedidoDetalleModal" class="gp-modal" aria-hidden="true">
+    <div class="gp-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pedidoDetalleTitle">
+        <div class="gp-modal__header">
+            <h3 id="pedidoDetalleTitle">Detalle del pedido</h3>
+            <button type="button" class="gp-modal__close js-close-detalle" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="gp-modal__body gp-modal__body-split">
+            <div class="pedido-resumen-panel field-full">
+                <div class="pedido-resumen-card pedido-status-band">
+                    <div class="pedido-resumen-main">
+                        <h4 class="pedido-carta-title" id="pedidoDetallePedidoInfo">Pedido -</h4>
+                        <div class="pedido-resumen-meta">
+                            <span id="pedidoDetalleMetaMesa" class="info-chip">Mesa -</span>
+                            <span id="pedidoDetalleMetaItems" class="info-chip">0 items</span>
+                        </div>
+                    </div>
+                    <div class="pedido-total-box">
+                        <span class="pedido-total-label">Total</span>
+                        <strong id="pedidoDetalleTotal">S/ 0.00</strong>
+                    </div>
+                </div>
+
+                <div class="table-shell pedido-detalle-table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>P. Unit.</th>
+                                <th>Subtotal</th>
+                                <th>Obs.</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidoDetalleListaBody">
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">Selecciona un pedido para ver su detalle.</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="pedido-carta-panel">
+                <div class="pedido-carta-panel__head">
+                    <div>
+                        <h4 class="pedido-carta-title">Productos</h4>
+                    </div>
+                    <div class="pedido-carta-hint">Toca un producto para cargarlo.</div>
+                </div>
+
+                <div class="pedido-product-grid">
+                    @foreach (var producto in carta)
+                    {
+                        <button type="button"
+                                class="pedido-product-card js-select-product @(Model.Detalle.IdProducto == producto.IdProducto ? "is-selected" : "")"
+                                data-product-id="@producto.IdProducto"
+                                data-product-name="@producto.Nombre"
+                                data-product-price="@producto.PrecioVenta.ToString("0.00")"
+                                data-product-category="@producto.Categoria">
+                            <span class="pedido-product-card__name">@producto.Nombre</span>
+                            <span class="pedido-product-card__meta">@producto.Categoria</span>
+                            <span class="pedido-product-card__price">S/ @producto.PrecioVenta.ToString("0.00")</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            @using (Html.BeginForm("AgregarDetalle", "Pedidos", FormMethod.Post, new { @class = "form-grid pedido-detail-form", id = "pedidoDetalleForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="Detalle_IdPedidoDetalle" name="IdPedidoDetalle" value="@Model.Detalle.IdPedidoDetalle" />
+                <input type="hidden" id="Detalle_IdPedido" name="IdPedido" value="@(Model.Detalle.IdPedido == 0 ? "" : Model.Detalle.IdPedido.ToString())" />
+                <input type="hidden" id="Detalle_IdProducto" name="IdProducto" value="@(Model.Detalle.IdProducto == 0 ? "" : Model.Detalle.IdProducto.ToString())" />
+
+                if (activeForm == "detallePedido")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="pedido-selection-strip field-full">
+                    <span class="pedido-selection-label">Seleccionado</span>
+                    <strong id="Detalle_PedidoInfo">Pedido -</strong>
+                    <span class="pedido-selection-sep">·</span>
+                    <span id="Detalle_ProductoInfo">Selecciona un producto de la grilla</span>
+                </div>
+
+                <div class="table-shell pedido-pending-shell field-full">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto en carga</th>
+                                <th>Cant.</th>
+                                <th>P. Unit.</th>
+                                <th>Subtotal</th>
+                                <th>Obs.</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidoCargaBody">
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">Aún no agregaste productos a la carga.</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="field">
+                    <label for="Detalle_Cantidad">Cantidad</label>
+                    <input id="Detalle_Cantidad" name="Cantidad" type="number" min="1" step="1" class="input-control" value="@Math.Max(1, Convert.ToInt32(Model.Detalle.Cantidad))" />
+                </div>
+
+                <div class="field">
+                    <label for="Detalle_Observacion">Observación</label>
+                    <textarea id="Detalle_Observacion" name="Observacion" class="input-control" rows="4">@Model.Detalle.Observacion</textarea>
+                </div>
+
+                <div class="actions field-full">
+                    <button type="button" class="btn btn-primary" id="detalleAddBtn">+ Agregar</button>
+                    <button type="button" class="btn btn-secondary" id="detalleSaveBtn">Guardar</button>
+                    <button type="button" class="btn btn-secondary btn-ghostish" id="detalleClearBtn">Limpiar</button>
+                    <button type="button" class="btn btn-ghost js-close-detalle">Cancelar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+(function () {
+    var modal = document.getElementById('pedidoDetalleModal');
+    var detalleForm = document.getElementById('pedidoDetalleForm');
+    var detalleIdInput = document.getElementById('Detalle_IdPedidoDetalle');
+    var pedidoInput = document.getElementById('Detalle_IdPedido');
+    var pedidoInfo = document.getElementById('pedidoDetallePedidoInfo');
+    var pedidoInfoForm = document.getElementById('Detalle_PedidoInfo');
+    var pedidoMetaMesa = document.getElementById('pedidoDetalleMetaMesa');
+    var pedidoMetaItems = document.getElementById('pedidoDetalleMetaItems');
+    var pedidoTotal = document.getElementById('pedidoDetalleTotal');
+    var pedidoDetalleBody = document.getElementById('pedidoDetalleListaBody');
+    var productoInput = document.getElementById('Detalle_IdProducto');
+    var productoInfo = document.getElementById('Detalle_ProductoInfo');
+    var cantidadInput = document.getElementById('Detalle_Cantidad');
+    var observacionInput = document.getElementById('Detalle_Observacion');
+    var detalleAddBtn = document.getElementById('detalleAddBtn');
+    var detalleSaveBtn = document.getElementById('detalleSaveBtn');
+    var detalleClearBtn = document.getElementById('detalleClearBtn');
+    var pedidoCargaBody = document.getElementById('pedidoCargaBody');
+    var productCards = document.querySelectorAll('.js-select-product');
+    var openButtons = document.querySelectorAll('.js-open-detalle');
+    var closeButtons = document.querySelectorAll('.js-close-detalle');
+    var detalleUrl = '@detallePedidoUrl';
+    var cargaTemporal = [];
+    var cargaEditIndex = -1;
+    var pedidoMesaActual = '-';
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function clearDetalleForm(keepPedido) {
+        detalleIdInput.value = '0';
+        productoInput.value = '';
+        cantidadInput.value = '1';
+        observacionInput.value = '';
+        productoInfo.textContent = 'Selecciona un producto de la grilla';
+        detalleAddBtn.textContent = '+ Agregar';
+        cargaEditIndex = -1;
+
+        for (var i = 0; i < productCards.length; i++) {
+            productCards[i].classList.remove('is-selected');
+        }
+
+        if (!keepPedido) {
+            pedidoInput.value = '';
+            pedidoMesaActual = '-';
+            pedidoInfo.textContent = 'Pedido -';
+            if (pedidoInfoForm) {
+                pedidoInfoForm.textContent = 'Pedido -';
+            }
+            if (pedidoMetaMesa) {
+                pedidoMetaMesa.textContent = 'Mesa -';
+            }
+            if (pedidoMetaItems) {
+                pedidoMetaItems.textContent = '0 items';
+            }
+        }
+    }
+
+    function setEditMode(linea) {
+        detalleIdInput.value = linea.IdPedidoDetalle || '';
+        pedidoInput.value = linea.IdPedido || '';
+        pedidoMesaActual = linea.NumeroMesa || '-';
+        productoInput.value = linea.IdProducto || '';
+        cantidadInput.value = linea.Cantidad || 1;
+        observacionInput.value = linea.Observacion || '';
+        pedidoInfo.textContent = 'Pedido ' + (linea.IdPedido || '-') + ' - Mesa ' + (linea.NumeroMesa || '-');
+        if (pedidoInfoForm) {
+            pedidoInfoForm.textContent = 'Pedido ' + (linea.IdPedido || '-') + ' - Mesa ' + (linea.NumeroMesa || '-');
+        }
+        if (pedidoMetaMesa) {
+            pedidoMetaMesa.textContent = 'Mesa ' + (linea.NumeroMesa || '-');
+        }
+        productoInfo.textContent = (linea.Producto || 'Selecciona un producto de la grilla') + ' - S/ ' + Number(linea.PrecioUnitario || 0).toFixed(2);
+        detalleAddBtn.textContent = 'Actualizar detalle';
+
+        for (var i = 0; i < productCards.length; i++) {
+            var card = productCards[i];
+            card.classList.toggle('is-selected', card.getAttribute('data-product-id') === String(linea.IdProducto));
+        }
+    }
+
+    function renderCargaTemporal() {
+        if (!cargaTemporal.length) {
+            pedidoCargaBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Aún no agregaste productos a la carga.</div></td></tr>';
+            if (pedidoMetaItems) {
+                pedidoMetaItems.textContent = '0 items';
+            }
+            return;
+        }
+
+        var html = '';
+        for (var i = 0; i < cargaTemporal.length; i++) {
+            var item = cargaTemporal[i];
+            html += '<tr>' +
+                '<td>' + escapeHtml(item.Producto) + '</td>' +
+                '<td>' + escapeHtml(item.Cantidad) + '</td>' +
+                '<td>S/ ' + Number(item.PrecioUnitario || 0).toFixed(2) + '</td>' +
+                '<td>S/ ' + Number(item.Subtotal || 0).toFixed(2) + '</td>' +
+                '<td>' + escapeHtml(item.Observacion || '-') + '</td>' +
+                '<td>' +
+                    '<button type="button" class="btn btn-secondary btn-small js-edit-pending" data-index="' + i + '">Editar</button> ' +
+                    '<button type="button" class="btn btn-ghost btn-small js-remove-pending" data-index="' + i + '">Quitar</button>' +
+                '</td>' +
+            '</tr>';
+        }
+
+        pedidoCargaBody.innerHTML = html;
+        if (pedidoMetaItems) {
+            pedidoMetaItems.textContent = cargaTemporal.length + ' items';
+        }
+    }
+
+    function syncTotalCargaTemporal() {
+        var total = 0;
+        for (var i = 0; i < cargaTemporal.length; i++) {
+            total += Number(cargaTemporal[i].Subtotal || 0);
+        }
+        return total;
+    }
+
+    function addCurrentToLoad() {
+        if (!pedidoInput.value) {
+            alert('Selecciona un pedido antes de agregar productos.');
+            return;
+        }
+
+        if (!productoInput.value) {
+            alert('Selecciona un producto de la grilla.');
+            return;
+        }
+
+        var selectedCard = document.querySelector('.js-select-product.is-selected');
+        var productoNombre = selectedCard ? selectedCard.getAttribute('data-product-name') : productoInfo.textContent;
+        var precioUnitario = Number(selectedCard ? selectedCard.getAttribute('data-product-price') : 0);
+        var cantidad = Math.max(1, parseInt(cantidadInput.value || '1', 10));
+        var subtotal = cantidad * precioUnitario;
+        var item = {
+            IdPedidoDetalle: detalleIdInput.value || '0',
+            IdPedido: pedidoInput.value,
+            IdProducto: productoInput.value,
+            Producto: productoNombre,
+            Cantidad: cantidad,
+            Observacion: observacionInput.value || '',
+            PrecioUnitario: precioUnitario,
+            Subtotal: subtotal
+        };
+
+        if (cargaEditIndex >= 0) {
+            cargaTemporal[cargaEditIndex] = item;
+        } else {
+            cargaTemporal.push(item);
+        }
+
+        renderCargaTemporal();
+        clearDetalleForm(true);
+    }
+
+    function refreshDetalle(pedidoId) {
+        if (!pedidoId) {
+            return Promise.resolve();
+        }
+
+        pedidoDetalleBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Cargando detalle...</div></td></tr>';
+        pedidoTotal.textContent = 'S/ 0.00';
+
+        return fetch(detalleUrl + '?idPedido=' + encodeURIComponent(pedidoId), { credentials: 'same-origin' })
+            .then(function (response) { return response.json(); })
+            .then(function (payload) {
+                if (!payload || !payload.ok) {
+                    pedidoDetalleBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No pudimos cargar el detalle del pedido.</div></td></tr>';
+                    return;
+                }
+
+                renderDetalle(payload.detalle || []);
+            })
+            .catch(function () {
+                pedidoDetalleBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No pudimos cargar el detalle del pedido.</div></td></tr>';
+            });
+    }
+
+    function renderDetalle(rows) {
+        var total = 0;
+
+        if (!rows || !rows.length) {
+            pedidoDetalleBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Este pedido todavía no tiene productos.</div></td></tr>';
+            pedidoTotal.textContent = 'S/ 0.00';
+            return;
+        }
+
+        var html = '';
+        for (var i = 0; i < rows.length; i++) {
+            var item = rows[i];
+            total += Number(item.Subtotal || 0);
+            html += '<tr>' +
+                '<td>' + escapeHtml(item.Producto) + '</td>' +
+                '<td>' + escapeHtml(item.Cantidad) + '</td>' +
+                '<td>S/ ' + Number(item.PrecioUnitario || 0).toFixed(2) + '</td>' +
+                '<td>S/ ' + Number(item.Subtotal || 0).toFixed(2) + '</td>' +
+                '<td>' + escapeHtml(item.Observacion || '-') + '</td>' +
+                '<td>' +
+                    '<button type="button" class="btn btn-secondary btn-small js-edit-line" data-line-id="' + escapeHtml(item.IdPedidoDetalle) + '" data-pedido-id="' + escapeHtml(item.IdPedido) + '" data-product-id="' + escapeHtml(item.IdProducto) + '" data-product-name="' + escapeHtml(item.Producto) + '" data-cantidad="' + escapeHtml(item.Cantidad) + '" data-observacion="' + escapeHtml(item.Observacion || '') + '" data-precio="' + escapeHtml(item.PrecioUnitario) + '">Editar</button> ' +
+                    '<button type="button" class="btn btn-ghost btn-small js-delete-line" data-line-id="' + escapeHtml(item.IdPedidoDetalle) + '">Borrar</button>' +
+                '</td>' +
+            '</tr>';
+        }
+
+        pedidoDetalleBody.innerHTML = html;
+        pedidoTotal.textContent = 'S/ ' + total.toFixed(2);
+    }
+
+    function saveLoadToPedido() {
+        if (!pedidoInput.value) {
+            alert('Selecciona un pedido antes de guardar.');
+            return;
+        }
+
+        if (!cargaTemporal.length) {
+            alert('No hay productos en la carga temporal.');
+            return;
+        }
+
+        var token = document.querySelector('#pedidoDetalleForm input[name="__RequestVerificationToken"]').value;
+        var chain = Promise.resolve();
+
+        for (var i = 0; i < cargaTemporal.length; i++) {
+            (function (item) {
+                chain = chain.then(function () {
+                    var body = new URLSearchParams({
+                        __RequestVerificationToken: token,
+                        IdPedido: pedidoInput.value,
+                        IdProducto: item.IdProducto,
+                        Cantidad: item.Cantidad,
+                        Observacion: item.Observacion,
+                        IdPedidoDetalle: item.IdPedidoDetalle || '0'
+                    });
+
+                    return fetch(detalleForm.action, {
+                        method: 'POST',
+                        body: body,
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                        }
+                    }).then(function (response) { return response.json(); }).then(function (payload) {
+                        if (!payload || !payload.ok) {
+                            throw new Error((payload && payload.message) || 'No pudimos guardar el detalle.');
+                        }
+                    });
+                });
+            })(cargaTemporal[i]);
+        }
+
+        chain.then(function () {
+            cargaTemporal = [];
+            renderCargaTemporal();
+            return refreshDetalle(pedidoInput.value);
+        }).catch(function (error) {
+            alert(error.message || 'No pudimos guardar el detalle.');
+        });
+    }
+
+    function openModal(pedidoId, mesa) {
+        pedidoInput.value = pedidoId || '';
+        pedidoInfo.textContent = 'Pedido ' + pedidoId + ' - Mesa ' + (mesa || '-');
+        if (pedidoInfoForm) {
+            pedidoInfoForm.textContent = 'Pedido ' + pedidoId + ' - Mesa ' + (mesa || '-');
+        }
+        if (pedidoMetaMesa) {
+            pedidoMetaMesa.textContent = 'Mesa ' + (mesa || '-');
+        }
+        cargaTemporal = [];
+        cargaEditIndex = -1;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        clearDetalleForm(true);
+        renderCargaTemporal();
+        refreshDetalle(pedidoId);
+    }
+
+    function selectProduct(button) {
+        if (!button) {
+            return;
+        }
+
+        for (var i = 0; i < productCards.length; i++) {
+            productCards[i].classList.remove('is-selected');
+        }
+
+        button.classList.add('is-selected');
+        productoInput.value = button.getAttribute('data-product-id') || '';
+        productoInfo.textContent = button.getAttribute('data-product-name') + ' - S/ ' + button.getAttribute('data-product-price') + ' (' + button.getAttribute('data-product-category') + ')';
+
+        if (parseInt(detalleIdInput.value || '0', 10) > 0) {
+            detalleIdInput.value = '0';
+            detalleAddBtn.textContent = '+ Agregar';
+        }
+    }
+
+    function submitDetalleForm() {
+        var formData = new FormData(detalleForm);
+
+        return fetch(detalleForm.action, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) {
+            if (!payload || !payload.ok) {
+                throw new Error((payload && payload.message) || 'No pudimos guardar el detalle.');
+            }
+
+            var currentPedido = pedidoInput.value;
+            clearDetalleForm(true);
+            refreshDetalle(currentPedido);
+        });
+    }
+
+    function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        cargaTemporal = [];
+        cargaEditIndex = -1;
+        renderCargaTemporal();
+        clearDetalleForm(true);
+    }
+
+    for (var i = 0; i < openButtons.length; i++) {
+        openButtons[i].addEventListener('click', function () {
+            openModal(this.getAttribute('data-pedido-id'), this.getAttribute('data-pedido-mesa'));
+        });
+    }
+
+    for (var j = 0; j < closeButtons.length; j++) {
+        closeButtons[j].addEventListener('click', closeModal);
+    }
+
+    for (var k = 0; k < productCards.length; k++) {
+        productCards[k].addEventListener('click', function () {
+            selectProduct(this);
+        });
+    }
+
+    pedidoDetalleBody.addEventListener('click', function (e) {
+        var editButton = e.target.closest('.js-edit-line');
+        if (editButton) {
+            setEditMode({
+                IdPedidoDetalle: editButton.getAttribute('data-line-id'),
+                IdPedido: editButton.getAttribute('data-pedido-id'),
+                IdProducto: editButton.getAttribute('data-product-id'),
+                Producto: editButton.getAttribute('data-product-name'),
+                Cantidad: editButton.getAttribute('data-cantidad'),
+                Observacion: editButton.getAttribute('data-observacion'),
+                PrecioUnitario: editButton.getAttribute('data-precio')
+            });
+            return;
+        }
+
+        var deleteButton = e.target.closest('.js-delete-line');
+        if (deleteButton) {
+            if (!confirm('¿Eliminar este detalle del pedido?')) {
+                return;
+            }
+
+            fetch('@Url.Action("EliminarDetalle", "Pedidos")', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: new URLSearchParams({
+                    __RequestVerificationToken: document.querySelector('#pedidoDetalleForm input[name="__RequestVerificationToken"]').value,
+                    idPedidoDetalle: deleteButton.getAttribute('data-line-id')
+                })
+            })
+            .then(function (response) { return response.json(); })
+            .then(function (payload) {
+                if (!payload || !payload.ok) {
+                    throw new Error((payload && payload.message) || 'No pudimos eliminar el detalle.');
+                }
+
+                refreshDetalle(pedidoInput.value);
+            })
+            .catch(function (error) {
+                alert(error.message || 'No pudimos eliminar el detalle.');
+            });
+        }
+    });
+
+    detalleForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+    });
+
+    detalleAddBtn.addEventListener('click', function () {
+        addCurrentToLoad();
+    });
+
+    detalleSaveBtn.addEventListener('click', function () {
+        saveLoadToPedido();
+    });
+
+    pedidoCargaBody.addEventListener('click', function (e) {
+        var editButton = e.target.closest('.js-edit-pending');
+        if (editButton) {
+            var index = parseInt(editButton.getAttribute('data-index'), 10);
+            var item = cargaTemporal[index];
+            if (!item) {
+                return;
+            }
+
+            cargaEditIndex = index;
+            detalleIdInput.value = item.IdPedidoDetalle || '';
+            pedidoInput.value = item.IdPedido || pedidoInput.value;
+            productoInput.value = item.IdProducto || '';
+            cantidadInput.value = item.Cantidad || 1;
+            observacionInput.value = item.Observacion || '';
+            productoInfo.textContent = item.Producto + ' - S/ ' + Number(item.PrecioUnitario || 0).toFixed(2);
+            detalleAddBtn.textContent = 'Actualizar detalle';
+
+            for (var i = 0; i < productCards.length; i++) {
+                productCards[i].classList.toggle('is-selected', productCards[i].getAttribute('data-product-id') === String(item.IdProducto));
+            }
+            return;
+        }
+
+        var removeButton = e.target.closest('.js-remove-pending');
+        if (removeButton) {
+            var removeIndex = parseInt(removeButton.getAttribute('data-index'), 10);
+            cargaTemporal.splice(removeIndex, 1);
+            renderCargaTemporal();
+        }
+    });
+
+    detalleClearBtn.addEventListener('click', function () {
+        clearDetalleForm(true);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+
+    if ('@activeForm' === 'detallePedido' && pedidoInput.value) {
+        openModal(pedidoInput.value, '-');
+    }
+
+    if (productoInput.value) {
+        for (var l = 0; l < productCards.length; l++) {
+            if (productCards[l].getAttribute('data-product-id') === productoInput.value) {
+                selectProduct(productCards[l]);
+                break;
+            }
+        }
+    }
+})();
+    </script>
+}
