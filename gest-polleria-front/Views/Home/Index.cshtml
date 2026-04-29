@@ -1,33 +1,211 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model gest_polleria_front.Models.DashboardViewModel
+@{
+    ViewBag.Title = "Resumen";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+@section Scripts {
+    <script>document.addEventListener('DOMContentLoaded', function () {
+            const mesasTable = document.getElementById('mesas-table');
+            const alertasTable = document.getElementById('alertas-table');
+            const reporteTable = document.getElementById('reporte-table');
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+            // Initialize DataTables
+            if (mesasTable) {
+                new DataTable(mesasTable, {
+                    // Opciones para la tabla de mesas
+                    perPage: 5,
+                    perPageSelect: [5, 10, 25],
+                    sortable: true,
+                    search: {
+                        placeholder: "Buscar en mesas...",
+                    },
+                });
+            }
+
+            if (alertasTable) {
+                new DataTable(alertasTable, {
+                    // Opciones para la tabla de alertas
+                    perPage: 5,
+                    perPageSelect: [5, 10, 25],
+                    sortable: true,
+                    search: {
+                        placeholder: "Buscar alertas...",
+                    },
+                });
+            }
+
+            if (reporteTable) {
+                new DataTable(reporteTable, {
+                    // Opciones para la tabla de reporte diario
+                    perPage: 5,
+                    perPageSelect: [5, 10, 25],
+                    sortable: true,
+                    search: {
+                        placeholder: "Buscar reportes...",
+                    },
+                });
+            }
+        });</script>
+}
+
+<section class="page-hero">
+    <p class="page-kicker">RESUMEN OPERATIVO</p>
+    <h1 class="page-title">Hola, @Model.NombreCompleto</h1>
+    <p class="page-subtitle">
+        Usuario <strong>@Model.UserName</strong> | Rol: <strong>@Model.Role</strong>
+    </p>
+
+    <div class="hero-actions">
+        @Html.ActionLink("Ver clientes", "Index", "Clientes", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Gestionar mesas", "Index", "Mesas", null, new { @class = "btn btn-secondary" })
+        @Html.ActionLink("Operar pedidos", "Index", "Pedidos", null, new { @class = "btn btn-secondary" })
+        @Html.ActionLink("Abrir reportes", "Index", "Reportes", null, new { @class = "btn btn-ghost" })
     </div>
-</main>
+</section>
+
+<section class="metric-grid">
+    <article class="metric-card">
+        <span class="metric-label">Clientes</span>
+        <strong class="metric-value">@Model.TotalClientes</strong>
+        <p class="metric-meta">Total de clientes registrados.</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Mesas libres</span>
+        <strong class="metric-value">@Model.MesasLibres</strong>
+        <p class="metric-meta">Mesas disponibles en salón.</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Mesas ocupadas</span>
+        <strong class="metric-value">@Model.MesasOcupadas</strong>
+        <p class="metric-meta">Mesas en atención.</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Meseros activos</span>
+        <strong class="metric-value">@Model.TotalMeserosActivos</strong>
+        <p class="metric-meta">Personal de atención.</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Alertas stock</span>
+        <strong class="metric-value">@Model.TotalAlertasStock</strong>
+        <p class="metric-meta">Insumos por reponer.</p>
+    </article>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-wide">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Estado de Mesas</h2>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (Model.Mesas.Count == 0)
+            {
+                <div class="empty-state">No hay mesas registradas.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table" id="mesas-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Mesa</th>
+                                <th>Capacidad</th>
+                                <th>Estado</th>
+                                <th>Activa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var mesa in Model.Mesas)
+                            {
+                                <tr>
+                                    <td>@mesa.IdMesa</td>
+                                    <td>@mesa.NumeroMesa</td>
+                                    <td>@mesa.Capacidad</td>
+                                    <td><span class="badge @mesa.EstadoCssClass">@mesa.Estado</span></td>
+                                    <td>@(mesa.Activa ? "Si" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Alertas de stock</h2>
+            </div>
+        </div>
+        <div class="panel-body stack">
+            @if (Model.AlertasStock.Count == 0)
+            {
+                <div class="empty-state">Stok de insumos en niveles óptimos.</div>
+            }
+            else
+            {
+                foreach (var alerta in Model.AlertasStock)
+                {
+                    <div class="mini-card">
+                        <div class="mini-card-head">
+                            <strong>@alerta.Insumo</strong>
+                            <span class="badge @alerta.EstadoCssClass">@alerta.EstadoStock</span>
+                        </div>
+                        <p class="helper-text">
+                            Stock actual: @alerta.StockActual.ToString("0.##") | Mínimo: @alerta.StockMinimo.ToString("0.##")
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-full">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Demanda del día</h2>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (Model.ReporteDiario.Count == 0)
+            {
+                <div class="empty-state">No hay pedidos registrados para el día actual.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table" id="reporte-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Código de mesa</th>
+                                <th>Mesa</th>
+                                <th>Pedidos</th>
+                                <th>Total estimado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ReporteDiario)
+                            {
+                                <tr>
+                                    <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
+                                    <td>@(item.IdMesa.HasValue ? item.IdMesa.Value.ToString() : "-")</td>
+                                    <td>@(item.NumeroMesa.HasValue ? item.NumeroMesa.Value.ToString() : "-")</td>
+                                    <td>@item.CantidadPedidos</td>
+                                    <td>S/ @item.TotalEstimado.ToString("0.00")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+</section>

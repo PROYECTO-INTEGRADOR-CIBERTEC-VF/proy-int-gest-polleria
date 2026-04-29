@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using gest_polleria.DAO;
 using gest_polleria.Models;
 
@@ -9,8 +8,33 @@ namespace gest_polleria.Controllers
     [ApiController]
     public class PedidoApiController : ControllerBase
     {
-        PedidoDAO _pedido = new PedidoDAO();
-        // POST: api/PedidosApi/abrirmesa?idMesa=2&idTipoPedido=1&idMesero=3
+        private readonly PedidoDAO _pedido = new PedidoDAO();
+        private readonly PedidoDetalleDAO _detalle = new PedidoDetalleDAO();
+
+        [HttpGet("abiertos")]
+        public async Task<IEnumerable<PedidoAbierto>> listarAbiertos()
+        {
+            return await Task.Run(() => _pedido.listarPedidosAbiertos());
+        }
+
+        [HttpGet("listar")]
+        public async Task<IEnumerable<PedidoOperativo>> listar()
+        {
+            return await Task.Run(() => _pedido.listarPedidosOperativos());
+        }
+
+        [HttpGet("carta")]
+        public async Task<IEnumerable<ProductoCarta>> carta()
+        {
+            return await Task.Run(() => _pedido.listarCarta());
+        }
+
+        [HttpGet("detalle/{idPedido}")]
+        public async Task<IEnumerable<PedidoDetalleLinea>> detalle(int idPedido)
+        {
+            return await Task.Run(() => _detalle.listarDetallePedido(idPedido));
+        }
+
         [HttpPost("abrirmesa")]
         public async Task<string> abrirMesa(
             [FromQuery] int idMesa,
@@ -20,14 +44,10 @@ namespace gest_polleria.Controllers
             return await Task.Run(() =>
             {
                 int idPedidoNuevo;
-                string msg = _pedido.abrirMesa(idMesa, idTipoPedido, idMesero, out idPedidoNuevo);
-                return $"{msg} (IdPedidoNuevo={idPedidoNuevo})";
+                return _pedido.abrirMesa(idMesa, idTipoPedido, idMesero, out idPedidoNuevo);
             });
         }
 
-        PedidoDetalleDAO _detalle = new PedidoDetalleDAO();
-
-        // POST: api/PedidosApi/agregardetalle?idPedido=1&idProducto=2&cantidad=1&observacion=Sin%20cebolla
         [HttpPost("agregardetalle")]
         public async Task<string> agregarDetalle(
             [FromQuery] int idPedido,
@@ -38,12 +58,10 @@ namespace gest_polleria.Controllers
             return await Task.Run(() =>
             {
                 int idDetNuevo;
-                string msg = _detalle.insertarDetalle(idPedido, idProducto, cantidad, observacion, out idDetNuevo);
-                return $"{msg} (IdPedidoDetalleNuevo={idDetNuevo})";
+                return _detalle.insertarDetalle(idPedido, idProducto, cantidad, observacion, out idDetNuevo);
             });
         }
 
-        // PUT: api/PedidosApi/actualizardetalle
         [HttpPut("actualizardetalle")]
         public async Task<string> actualizarDetalle(
             [FromQuery] int idPedidoDetalle,
@@ -55,7 +73,6 @@ namespace gest_polleria.Controllers
             );
         }
 
-        // DELETE: api/PedidosApi/eliminardetalle/5
         [HttpDelete("eliminardetalle/{id}")]
         public async Task<string> eliminarDetalle(int id)
         {
@@ -64,7 +81,6 @@ namespace gest_polleria.Controllers
             );
         }
 
-        // PUT: api/PedidosApi/enviaracocina/5
         [HttpPut("enviaracocina/{id}")]
         public async Task<string> enviarACocina(int id)
         {
@@ -73,7 +89,6 @@ namespace gest_polleria.Controllers
             );
         }
 
-        // PUT: api/PedidosApi/cerrarmesa/5
         [HttpPut("cerrarmesa/{id}")]
         public async Task<string> cerrarMesa(int id)
         {
@@ -96,14 +111,12 @@ namespace gest_polleria.Controllers
             return await Task.Run(() =>
             {
                 int idPedido;
-                string msg = _pedido.registrarPedido(
+                return _pedido.registrarPedido(
                     p.IdTipoPedido,
                     p.IdCliente,
                     p.DireccionDelivery,
                     out idPedido
                 );
-
-                return $"{msg} (IdPedido={idPedido})";
             });
         }
     }

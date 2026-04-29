@@ -1,40 +1,81 @@
-﻿<!DOCTYPE html>
+﻿@using System
+@{
+    var authUser = Context.Session["AuthUser"] as string;
+    var authRole = Context.Session["AuthRole"] as string;
+    var authName = Context.Session["AuthNombre"] as string ?? authUser ?? "";
+    var isAuth = !string.IsNullOrWhiteSpace(authUser);
+    var isAdmin = string.Equals(authRole, "Administrador", StringComparison.OrdinalIgnoreCase);
+    var isMesero = string.Equals(authRole, "MESERO", StringComparison.OrdinalIgnoreCase);
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? string.Empty;
+    Func<string, string> navClass = controller =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) ? "nav-link active" : "nav-link";
+    var flashMessage = TempData["FlashMessage"] as string;
+    var flashType = TempData["FlashType"] as string ?? "success";
+}
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Gest Polleria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Nombre de la aplicación", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contacto", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
-            </div>
+    <header class="topbar">
+        <div class="brand-block">
+            @Html.ActionLink("Gest Polleria", isMesero ? "Mesero" : "Index", isMesero ? "Pedidos" : "Home", null, new { @class = "brand-link" })
         </div>
-    </nav>
-    <div class="container body-content">
+
+        @if (isAuth)
+        {
+            <nav class="topbar-nav">
+                @if (isMesero)
+                {
+                    @Html.ActionLink("Atencion", "Mesero", "Pedidos", null, new { @class = navClass("Pedidos") })
+                }
+                else
+                {
+                    @Html.ActionLink("Resumen", "Index", "Home", null, new { @class = navClass("Home") })
+                    @Html.ActionLink("Clientes", "Index", "Clientes", null, new { @class = navClass("Clientes") })
+                    @Html.ActionLink("Mesas", "Index", "Mesas", null, new { @class = navClass("Mesas") })
+                    @Html.ActionLink("Pedidos", "Index", "Pedidos", null, new { @class = navClass("Pedidos") })
+                    @Html.ActionLink("Reportes", "Index", "Reportes", null, new { @class = navClass("Reportes") })
+                }
+
+                @if (isAdmin)
+                {
+                    @Html.ActionLink("Insumos", "Index", "Insumos", null, new { @class = navClass("Insumos") })
+                    @Html.ActionLink("Meseros", "Index", "Meseros", null, new { @class = navClass("Meseros") })
+                }
+
+                @Html.ActionLink("Salir", "Logout", "Home", null, new { @class = "nav-link nav-link-danger" })
+            </nav>
+
+            <div class="user-pill">
+                <strong>@authName</strong>
+                <span>@authRole</span>
+            </div>
+        }
+    </header>
+
+    <main class="app-shell">
+        @if (!string.IsNullOrWhiteSpace(flashMessage))
+        {
+            <div class="flash flash-@flashType">@flashMessage</div>
+        }
+
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
-        </footer>
-    </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; @DateTime.Now.Year - Gest Polleria</p>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
 </html>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
+using gest_polleria.Models;
 
 namespace gest_polleria.DAO
 {
@@ -39,7 +40,10 @@ namespace gest_polleria.DAO
                     mensaje = Convert.ToString(pMsg.Value) ?? mensaje;
 
                     if (ok && pId.Value != DBNull.Value)
+                    {
                         idPedidoDetalleNuevo = Convert.ToInt32(pId.Value);
+                        RecalcularTotalPedido(cn, idPedido);
+                    }
                 }
             }
 
@@ -69,6 +73,15 @@ namespace gest_polleria.DAO
 
                     cmd.ExecuteNonQuery();
                     mensaje = Convert.ToString(pMsg.Value) ?? mensaje;
+
+                    if (Convert.ToBoolean(pOk.Value))
+                    {
+                        int idPedido = ObtenerIdPedidoDetalle(cn, idPedidoDetalle);
+                        if (idPedido > 0)
+                        {
+                            RecalcularTotalPedido(cn, idPedido);
+                        }
+                    }
                 }
             }
             return mensaje;
@@ -81,6 +94,7 @@ namespace gest_polleria.DAO
             using (SqlConnection cn = new SqlConnection(cadena))
             {
                 cn.Open();
+                int idPedido = ObtenerIdPedidoDetalle(cn, idPedidoDetalle);
                 using (SqlCommand cmd = new SqlCommand("dbo.usp_PedidosDetalle_Eliminar", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -94,15 +108,98 @@ namespace gest_polleria.DAO
 
                     cmd.ExecuteNonQuery();
                     mensaje = Convert.ToString(pMsg.Value) ?? mensaje;
+
+                    if (Convert.ToBoolean(pOk.Value))
+                    {
+                        RecalcularTotalPedido(cn, idPedido);
+                    }
                 }
             }
             return mensaje;
         }
 
-        public object buscarDetalle(int value)
+        private static int ObtenerIdPedidoDetalle(SqlConnection cn, int idPedidoDetalle)
         {
-            throw new NotImplementedException();
+            using (SqlCommand cmd = new SqlCommand("SELECT TOP 1 IdPedido FROM dbo.PedidosDetalle WHERE IdPedidoDetalle = @IdPedidoDetalle", cn))
+            {
+                cmd.Parameters.Add("@IdPedidoDetalle", SqlDbType.Int).Value = idPedidoDetalle;
+                object? resultado = cmd.ExecuteScalar();
+                return resultado == null || resultado == DBNull.Value ? 0 : Convert.ToInt32(resultado);
+            }
+        }
+
+        private static void RecalcularTotalPedido(SqlConnection cn, int idPedido)
+        {
+            if (idPedido <= 0)
+            {
+                return;
+            }
+
+            using (SqlCommand cmd = new SqlCommand(@"
+                UPDATE p
+                SET TotalEstimado = ISNULL(t.Total, 0)
+                FROM dbo.Pedidos p
+                OUTER APPLY
+                (
+                    SELECT SUM(CAST(pd.Cantidad AS DECIMAL(18,2)) * pr.PrecioVenta) AS Total
+                    FROM dbo.PedidosDetalle pd
+                    INNER JOIN dbo.Productos pr ON pr.IdProducto = pd.IdProducto
+                    WHERE pd.IdPedido = p.IdPedido
+                      AND pd.Activo = 1
+                ) t
+                WHERE p.IdPedido = @IdPedido", cn))
+            {
+                cmd.Parameters.Add("@IdPedido", SqlDbType.Int).Value = idPedido;
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public IEnumerable<PedidoDetalleLinea> listarDetallePedido(int idPedido)
+        {
+            List<PedidoDetalleLinea> lista = new List<PedidoDetalleLinea>();
+
+            using (SqlConnection cn = new SqlConnection(cadena))
+            {
+                cn.Open();
+                using (SqlCommand cmd = new SqlCommand(@"
+                    SELECT d.IdPedidoDetalle,
+                           d.IdPedido,
+                           d.IdProducto,
+                           ISNULL(p.Nombre, '') AS Producto,
+                           d.Cantidad,
+                           ISNULL(d.Observacion, '') AS Observacion,
+                           p.PrecioVenta AS PrecioUnitario,
+                           (d.Cantidad * p.PrecioVenta) AS Subtotal
+                    FROM PedidosDetalle d
+                    INNER JOIN Productos p ON p.IdProducto = d.IdProducto
+                    WHERE d.IdPedido = @IdPedido
+                    ORDER BY d.IdPedidoDetalle", cn))
+                {
+                    cmd.Parameters.Add("@IdPedido", SqlDbType.Int).Value = idPedido;
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new PedidoDetalleLinea
+                            {
+                                IdPedidoDetalle = dr.GetInt32(0),
+                                IdPedido = dr.GetInt32(1),
+                                IdProducto = dr.GetInt32(2),
+                                Producto = dr.GetString(3),
+                                Cantidad = dr.GetDecimal(4),
+                                Observacion = dr.GetString(5),
+                                PrecioUnitario = dr.GetDecimal(6),
+                                Subtotal = dr.GetDecimal(7)
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
         }
     }
 }
+
 
