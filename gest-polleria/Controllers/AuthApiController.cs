@@ -8,7 +8,7 @@ namespace gest_polleria.Controllers
     [ApiController]
     public class AuthApiController : ControllerBase
     {
-        AuthDAO _auth = new AuthDAO();
+        private readonly AuthDAO _auth = new AuthDAO();
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
