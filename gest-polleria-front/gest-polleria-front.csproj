@@ -123,7 +123,9 @@
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InsumosController.cs" />
     <Compile Include="Controllers\PedidosController.cs" />
+    <Compile Include="Controllers\ReportesController.cs" />
     <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -183,6 +185,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Pedidos\Index.cshtml" />
     <Content Include="Views\Clientes\Index.cshtml" />
+    <Content Include="Views\Insumos\Index.cshtml" />
+    <Content Include="Views\Meseros\Index.cshtml" />
+    <Content Include="Views\Reportes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
