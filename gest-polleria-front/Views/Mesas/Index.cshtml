@@ -1,0 +1,147 @@
+﻿@model gest_polleria_front.Models.MesasIndexViewModel
+@{
+    ViewBag.Title = "Mesas";
+    var activeForm = ViewBag.ActiveForm as string ?? string.Empty;
+    var mesasActivas = Model.Mesas.Where(m => m.Activa).OrderBy(m => m.NumeroMesa).ToList();
+}
+
+<section class="page-hero">
+    <p class="page-kicker">MESAS</p>
+    <h1 class="page-title">Gestión de mesas</h1>
+    <p class="page-subtitle">Alta de mesas y cambio de estado.</p>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-wide">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Estado actual</h2>
+                <p class="panel-subtitle">Estado del salón para la operación diaria.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (Model.Mesas.Count == 0)
+            {
+                <div class="empty-state">No hay mesas registradas.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Mesa</th>
+                                <th>Descripción</th>
+                                <th>Capacidad</th>
+                                <th>Estado</th>
+                                <th>Activa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var mesa in Model.Mesas)
+                            {
+                                <tr>
+                                    <td>@mesa.IdMesa</td>
+                                    <td>@mesa.NumeroMesa</td>
+                                    <td>@(string.IsNullOrWhiteSpace(mesa.Descripcion) ? "-" : mesa.Descripcion)</td>
+                                    <td>@mesa.Capacidad</td>
+                                    <td><span class="badge @mesa.EstadoCssClass">@mesa.Estado</span></td>
+                                    <td>@(mesa.Activa ? "Si" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Nueva mesa</h2>
+                <p class="panel-subtitle">Registra la capacidad y una descripción opcional.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Crear", "Mesas", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "crearMesa")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field">
+                    <label for="NumeroMesa">Número de mesa</label>
+                    <input id="NumeroMesa" name="NumeroMesa" class="input-control" value="@(Model.NuevaMesa.NumeroMesa == 0 ? "" : Model.NuevaMesa.NumeroMesa.ToString())" />
+                </div>
+
+                <div class="field">
+                    <label for="Capacidad">Capacidad</label>
+                    <select id="Capacidad" name="Capacidad" class="input-control">
+                        <option value="2" @(Model.NuevaMesa.Capacidad == 2 ? "selected" : null)>2 personas</option>
+                        <option value="4" @(Model.NuevaMesa.Capacidad == 4 ? "selected" : null)>4 personas</option>
+                        <option value="6" @(Model.NuevaMesa.Capacidad == 6 ? "selected" : null)>6 personas</option>
+                        <option value="8" @(Model.NuevaMesa.Capacidad == 8 ? "selected" : null)>8 personas</option>
+                        <option value="10" @(Model.NuevaMesa.Capacidad == 10 ? "selected" : null)>10 personas</option>
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label for="Descripcion">Descripción</label>
+                    <input id="Descripcion" name="Descripcion" class="input-control" value="@Model.NuevaMesa.Descripcion" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Registrar mesa</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Cambiar estado</h2>
+                <p class="panel-subtitle">Selecciona una mesa y actualiza su estado.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("CambiarEstado", "Mesas", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "estadoMesa")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field field-full">
+                    <label for="IdMesa">Mesa</label>
+                    <select id="IdMesa" name="IdMesa" class="input-control">
+                        <option value="">Selecciona una mesa</option>
+                        @foreach (var mesa in mesasActivas)
+                        {
+                            <option value="@mesa.IdMesa" @(Model.CambioEstado.IdMesa == mesa.IdMesa ? "selected" : null)>Mesa @mesa.NumeroMesa</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label for="Estado">Estado</label>
+                    <select id="Estado" name="Estado" class="input-control">
+                        <option value="LIBRE" @(Model.CambioEstado.Estado == "LIBRE" ? "selected" : null)>LIBRE</option>
+                        <option value="OCUPADA" @(Model.CambioEstado.Estado == "OCUPADA" ? "selected" : null)>OCUPADA</option>
+                        <option value="RESERVADA" @(Model.CambioEstado.Estado == "RESERVADA" ? "selected" : null)>RESERVADA</option>
+                        <option value="MANTENIMIENTO" @(Model.CambioEstado.Estado == "MANTENIMIENTO" ? "selected" : null)>MANTENIMIENTO</option>
+                    </select>
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-secondary">Actualizar estado</button>
+                </div>
+            }
+        </div>
+    </article>
+</section>
