@@ -1,0 +1,206 @@
+﻿@model gest_polleria_front.Models.MeserosIndexViewModel
+@{
+    ViewBag.Title = "Meseros";
+    var activeForm = ViewBag.ActiveForm as string ?? string.Empty;
+    var meserosActivos = Model.Meseros.Where(m => m.Activo).OrderBy(m => m.NombreCompleto).ToList();
+}
+
+<section class="page-hero">
+    <p class="page-kicker">MESEROS</p>
+    <h1 class="page-title">Personal, turnos y zonas</h1>
+    <p class="page-subtitle">Gestiona personal, turnos y zonas de atención.</p>
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-full">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Equipo visible</h2>
+                <p class="panel-subtitle">Incluye el último turno y la zona asignada.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @if (Model.Meseros.Count == 0)
+            {
+                <div class="empty-state">No hay meseros registrados.</div>
+            }
+            else
+            {
+                <div class="table-shell">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Turno</th>
+                                <th>Zona</th>
+                                <th>Activo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Meseros)
+                            {
+                                <tr>
+                                    <td>@item.IdUsuario</td>
+                                    <td>@item.UserName</td>
+                                    <td>@item.NombreCompleto</td>
+                                    <td>@item.Rol</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Turno) ? "-" : item.Turno)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Zona) ? "-" : item.Zona)</td>
+                                    <td>@(item.Activo ? "Si" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Nuevo mesero</h2>
+                <p class="panel-subtitle">Registra una nueva cuenta de atención.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Crear", "Meseros", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "crearMesero")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field">
+                    <label for="UserName">Usuario</label>
+                    <input id="UserName" name="UserName" class="input-control" value="@Model.NuevoMesero.UserName" />
+                </div>
+
+                <div class="field">
+                    <label for="ClaveHash">Clave</label>
+                    <input id="ClaveHash" name="ClaveHash" class="input-control" value="@Model.NuevoMesero.ClaveHash" />
+                </div>
+
+                <div class="field field-full">
+                    <label for="NombreCompleto">Nombre completo</label>
+                    <input id="NombreCompleto" name="NombreCompleto" class="input-control" value="@Model.NuevoMesero.NombreCompleto" />
+                </div>
+
+                <div class="field">
+                    <label for="Email">Correo</label>
+                    <input id="Email" name="Email" class="input-control" value="@Model.NuevoMesero.Email" />
+                </div>
+
+                <div class="field">
+                    <label for="Telefono">Teléfono</label>
+                    <input id="Telefono" name="Telefono" class="input-control" value="@Model.NuevoMesero.Telefono" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Asignar turno</h2>
+                <p class="panel-subtitle">Selecciona un integrante y define su horario.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("RegistrarTurno", "Meseros", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "turnoMesero")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field field-full">
+                    <label for="TurnoIdUsuario">Integrante</label>
+                    <select id="TurnoIdUsuario" name="IdUsuario" class="input-control">
+                        <option value="">Selecciona usuario</option>
+                        @foreach (var mesero in meserosActivos)
+                        {
+                            <option value="@mesero.IdUsuario" @(Model.NuevoTurno.IdUsuario == mesero.IdUsuario ? "selected" : null)>@mesero.NombreCompleto</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="Turno">Turno</label>
+                    <select id="Turno" name="Turno" class="input-control">
+                        <option value="MANANA" @(Model.NuevoTurno.Turno == "MANANA" ? "selected" : null)>MANANA</option>
+                        <option value="TARDE" @(Model.NuevoTurno.Turno == "TARDE" ? "selected" : null)>TARDE</option>
+                        <option value="NOCHE" @(Model.NuevoTurno.Turno == "NOCHE" ? "selected" : null)>NOCHE</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="HoraInicio">Hora inicio</label>
+                    <input id="HoraInicio" name="HoraInicio" type="time" class="input-control" value="@Model.NuevoTurno.HoraInicio" />
+                </div>
+
+                <div class="field field-full">
+                    <label for="HoraFin">Hora fin</label>
+                    <input id="HoraFin" name="HoraFin" type="time" class="input-control" value="@Model.NuevoTurno.HoraFin" />
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-secondary">Guardar turno</button>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel panel-compact">
+        <div class="panel-header">
+            <div>
+                <h2 class="panel-title">Asignar zona</h2>
+                <p class="panel-subtitle">Asigna una zona de atención para el turno.</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("AsignarZona", "Meseros", FormMethod.Post, new { @class = "form-grid" }))
+            {
+                @Html.AntiForgeryToken()
+                if (activeForm == "zonaMesero")
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "form-errors field-full" })
+                }
+
+                <div class="field field-full">
+                    <label for="ZonaIdUsuario">Integrante</label>
+                    <select id="ZonaIdUsuario" name="IdUsuario" class="input-control">
+                        <option value="">Selecciona usuario</option>
+                        @foreach (var mesero in meserosActivos)
+                        {
+                            <option value="@mesero.IdUsuario" @(Model.NuevaZona.IdUsuario == mesero.IdUsuario ? "selected" : null)>@mesero.NombreCompleto</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="field field-full">
+                    <label for="IdZona">Zona</label>
+                    <select id="IdZona" name="IdZona" class="input-control">
+                        <option value="1" @(Model.NuevaZona.IdZona == 1 ? "selected" : null)>1 - Salon A</option>
+                        <option value="2" @(Model.NuevaZona.IdZona == 2 ? "selected" : null)>2 - Salon B</option>
+                        <option value="3" @(Model.NuevaZona.IdZona == 3 ? "selected" : null)>3 - Terraza</option>
+                        <option value="4" @(Model.NuevaZona.IdZona == 4 ? "selected" : null)>4 - Delivery</option>
+                    </select>
+                </div>
+
+                <div class="actions field-full">
+                    <button type="submit" class="btn btn-secondary">Asignar zona</button>
+                </div>
+            }
+        </div>
+    </article>
+</section>
